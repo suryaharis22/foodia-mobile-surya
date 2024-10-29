@@ -29,17 +29,15 @@ const CameraKupon = () => {
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                console.log(videoDevices);
+
                 setCameraDevices(videoDevices);
 
                 // Prioritize rear camera, fallback to front camera if rear is not found
                 const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('rear'));
                 const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front')) || videoDevices[0];
 
-                if (rearCamera) {
-                    setSelectedCamera(rearCamera.deviceId);
-                } else {
-                    setSelectedCamera(frontCamera.deviceId);
-                }
+                setSelectedCamera(rearCamera ? rearCamera.deviceId : frontCamera.deviceId);
             } catch (error) {
                 console.error('Error enumerating devices:', error);
             }
@@ -51,7 +49,6 @@ const CameraKupon = () => {
                         latitude,
                         longitude
                     });
-                    // setCaptureCoordinates(`${latitude};${longitude}`);
                 },
                 (error) => {
                     console.error('Error getting geolocation:', error);
@@ -63,8 +60,12 @@ const CameraKupon = () => {
         };
 
         fetchCameraAndLocation();
-    }, [captureTime, captureCoordinates]);
+    }, []); // Removed dependencies that cause unnecessary re-renders
 
+    const handleCameraChange = (event) => {
+        const newCamera = event.target.value;
+        setSelectedCamera(newCamera);
+    };
 
     useEffect(() => {
         let storedImages = [];
@@ -75,6 +76,7 @@ const CameraKupon = () => {
         }
         setImgSrc(storedImages);
     }, []);
+
 
     const capture = React.useCallback(() => {
         let minPhotos = 0;
@@ -170,12 +172,6 @@ const CameraKupon = () => {
         }
     }, [webcamRef, setImgSrc, captureTime, captureCoordinates, router.asPath, imgSrc.length]);
 
-
-
-    const handleCameraChange = (event) => {
-        setSelectedCamera(event.target.value);
-    };
-
     const handleUpload = () => {
         let minPhotos = 0;
         let maxPhotos = 0;
@@ -255,7 +251,7 @@ const CameraKupon = () => {
                         value={selectedCamera}
                     >
                         {cameraDevices.map((device, index) => (
-                            <option key={index} value={device.deviceId}>
+                            <option key={device.deviceId} value={device.deviceId}>
                                 {device.label || `Camera ${index + 1}`}
                             </option>
                         ))}
@@ -272,9 +268,8 @@ const CameraKupon = () => {
                 <Webcam
                     ref={webcamRef}
                     audio={false}
-                    mirrored={true}
+                    mirrored={selectedCamera && cameraDevices.find(device => device.deviceId === selectedCamera)?.label.toLowerCase().includes('front')}
                     className="absolute top-0 left-0 w-full h-full object-cover"
-                    // videoConstraints={videoConstraints}
                     key={selectedCamera}
                     screenshotFormat="image/jpeg"
                     videoConstraints={{
