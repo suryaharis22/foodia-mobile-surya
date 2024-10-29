@@ -65,7 +65,7 @@ const CameraKupon = () => {
         };
 
         fetchLocationAndTime();
-    }, []);
+    }, [imgSrc]);
 
     const handleCameraChange = (event) => {
         const newCamera = event.target.value;
@@ -270,11 +270,8 @@ const CameraKupon = () => {
                     <IconSquareRoundedX />
                 </button>
             </div>
-            <div className="">
-                {cameraDevices.map((device, index) => (
-                    <p>{device.label || `Camera ${index + 1}`}</p>
-                ))}
-            </div>
+
+
             <div className="relative w-full max-w-4xl h-[600px] bg-gray-800 rounded-lg overflow-hidden shadow-lg">
                 <Webcam
                     ref={webcamRef}
