@@ -1,0 +1,537 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "~leaflet/dist/leaflet.css";
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf");
+  font-weight: normal;
+}
+
+/* @font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-SemiBold.ttf");
+  font-weight: normal;
+} */
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Bold.ttf");
+  font-weight: 600;
+}
+
+p,
+span,
+h1,
+button,
+label,
+i,
+link,
+a,
+div {
+  font-family: "Poppins", sans-serif;
+}
+
+#image {
+  /* box-shadow: 5px 5px 5px 5px gray; */
+  width: 60px;
+  padding: 10px;
+  font-weight: 400;
+  padding-bottom: 0px;
+  height: 40px;
+  user-select: none;
+  text-decoration: line-through;
+  font-style: italic;
+  font-size: x-large;
+}
+
+#user-input {
+  /* box-shadow: 5px 5px 5px 5px gray; */
+  width: auto;
+  margin-right: 10px;
+  padding: 10px;
+  padding-bottom: 0px;
+  width: 50px;
+  height: 40px;
+  /* border: red 0px solid; */
+}
+
+input {
+  padding: 5px;
+  /* border: 1px black solid; */
+  outline: none !important;
+}
+
+.inline {
+  display: inline-block;
+}
+
+#btn {
+  box-shadow: 5px 5px 5px grey;
+  color: aqua;
+  margin: 10px;
+  background-color: brown;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  outline: none !important;
+}
+
+input {
+  outline: none !important;
+}
+
+input[type="checkbox"] {
+  accent-color: #3ab74d;
+}
+
+input[type="radio"] {
+  accent-color: #3ab74d;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 1px;
+  bottom: 1px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #3ab74d;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #3ab74d;
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+.custom-swal {
+  height: 500px;
+  padding: 0;
+  margin-right: 5px;
+  margin-bottom: 0;
+  border-top-left-radius: 60px;
+  border-top-right-radius: 60px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.custom-icon-swal {
+  margin-bottom: 0;
+  margin-top: 60px;
+}
+
+.custom-title-swal {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  /* margin-left: 10px; */
+  margin-top: 140px;
+  /* width: 190px; */
+}
+
+.custom-confirm-button-swal {
+  width: 300px;
+  margin-bottom: 25px;
+}
+
+.swal2-container {
+  padding: 0;
+}
+
+.swal2-confirm {
+  border-radius: 15px !important;
+  /* Adjust border radius as needed */
+}
+
+.swal2-cancel {
+  border-radius: 15px !important;
+  /* Adjust border radius as needed */
+}
+
+.swal2-popup.swal2-show-swipeup {
+  animation: swipeup 0.5s ease forwards;
+}
+
+.swal2-popup.swal2-show-swipedown {
+  animation: swipedown 0.5s ease forwards;
+}
+
+@keyframes swipeup {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+@keyframes swipedown {
+  from {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #6b6a6a;
+  border-radius: 40px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.mobile-w {
+  width: 375px;
+}
+
+.mobile-h {
+  height: 100%;
+}
+
+/* ------------------------------------ Start Fotbar ------------------------------------ */
+.kotak {
+  /* bg-warna */
+  background-color: white;
+  box-shadow: 0px 0px 20px 0px rgba(0, 38, 96, 0.08);
+  height: 200px;
+  border-radius: 10px;
+  width: 375px;
+  border-radius: 20px;
+  position: absolute;
+  /* margin-bottom: 100px; */
+}
+
+.lingkar {
+  border-radius: 500px;
+  background-color: #c4c4c4;
+  width: 82.89854431152344px;
+  height: 88px;
+  position: absolute;
+  left: 153px;
+  top: -44px;
+}
+
+.icon_nav {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+}
+
+/* menu ke 1 */
+.menu1 {
+  left: 30px;
+  top: 28px;
+}
+
+/* meneu ke 2 */
+.menu2 {
+  left: 75px;
+  top: 28px;
+}
+
+/* menu ke 3 */
+.menu3 {
+  left: 250px;
+  top: 28px;
+}
+
+/* menu ke 4 */
+.menu4 {
+  left: 320px;
+  top: 28px;
+}
+
+/* menu tengah */
+.lingkaran {
+  background-image: linear-gradient(0deg, #3fb648 0%, #64a66a 100%);
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  border-radius: 100px;
+  left: 156px;
+  top: -22px;
+}
+
+.iconQr {
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  border-radius: 100px;
+}
+
+/* ------------------------------------ End Fotbar ------------------------------------ */
+
+.ketProduk {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  /* Show only 3 lines */
+  -webkit-box-orient: vertical;
+}
+
+/* ----------------------------------------------------- Nominal */
+.custom-radio {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  outline: none;
+}
+
+.custom-input {
+  border-radius: 0;
+  outline: none;
+  /* Tambahkan gaya lain sesuai kebutuhan Anda */
+}
+
+.custom-radio:checked {
+  border: 2px solid #3490dc;
+}
+
+.custom-radio-checked {
+  background-color: #3490dc;
+}
+
+.your-custom-popup-class {
+  width: 372px;
+  position: absolute;
+  bottom: 10px;
+  margin: auto;
+}
+
+/* ----------------------------------------------------- animation */
+@keyframes zoom-in-out {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-zoom {
+  animation: zoom-in-out 2s ease infinite;
+}
+
+.with-image {
+  padding-left: 30px;
+  /* Mengatur ruang untuk gambar di sebelah kiri */
+  background-repeat: no-repeat;
+  background-position: left center;
+  /* Menempatkan gambar di sebelah kiri */
+  background-size: 20px;
+  /* Ukuran gambar */
+}
+
+/* Menambahkan gambar untuk setiap opsi */
+option[value="bca"].with-image {
+  background-image: url("/bank/bca.png");
+}
+
+option[value="mandiri"].with-image {
+  background-image: url("/bank/mandiri.png");
+}
+
+/* ========icon Load===================== */
+.loader {
+  position: absolute;
+  width: 64px;
+  height: 60px;
+}
+
+.loader::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: #fff;
+  width: 64px;
+  height: 32px;
+  border-radius: 0 0 50px 50px;
+  animation: move 0.5s linear infinite alternate;
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  background: #ff3d00;
+  width: 24px;
+  height: 24px;
+  transform: translateX(-50%) rotate(0deg);
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+@keyframes move {
+  0% {
+    transform: rotate(10deg);
+  }
+
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+/* ==============================button load==================== */
+.btn-loader {
+  position: sticky;
+  width: 20px;
+  height: 20px;
+}
+
+.btn-loader::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: #fff;
+  width: 20px;
+  height: 10px;
+  border-radius: 0 0 50px 50px;
+  animation: move 0.5s linear infinite alternate;
+}
+
+.btn-loader::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  background: #ff3d00;
+  width: 8px;
+  height: 8px;
+  transform: translateX(-50%) rotate(0deg);
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+@keyframes move {
+  0% {
+    transform: rotate(10deg);
+  }
+
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+/* ==================Alert ==================== */
+.colored-toast {
+  background-color: #f87171;
+}
+
+/* ==================Modal ==================== */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 800px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+}
+
+.close-modal-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+}
+
+.img-carousel {
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  /* Ensure the image fits within the viewport */
+  object-fit: contain;
+  /* Maintain aspect ratio */
+}

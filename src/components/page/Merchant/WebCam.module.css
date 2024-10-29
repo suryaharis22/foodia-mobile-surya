@@ -1,0 +1,226 @@
+/* fix webcam */
+
+/* .webcam-container {
+    position: relative;
+    background: yellow;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 10px;
+} */
+
+/* styles.module.css atau file CSS Anda */
+/* styles.module.css atau file CSS Anda */
+.upload-image-container {
+    display: flex;
+    width: 100%;
+    padding: 10px 0px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+    transition: background 1s ease;
+    /* Transisi untuk latar belakang */
+}
+
+.upload-image-container.has-images {
+    background: linear-gradient(to bottom, #C1C1C1, #707070);
+    /* Gradasi warna latar belakang ketika ada gambar */
+}
+
+@keyframes fadeInBackground {
+    from {
+        background: transparent;
+    }
+
+    to {
+        background: linear-gradient(to bottom, #C1C1C1, #707070);
+        /* Animasi perubahan latar belakang */
+    }
+}
+
+
+
+.camera-select-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.camera-select-group {
+    display: flex;
+    align-items: center;
+}
+
+.camera-select {
+    margin-left: 2px;
+}
+
+.close-button {
+    background: #DE0606;
+    border-radius: 10px;
+    padding: 2px 2px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    transition: transform 0.3s ease;
+    /* Menambahkan transisi untuk transformasi */
+}
+
+.close-button:hover {
+    transform: scale(1.1);
+}
+
+.cameraPreview {
+    background: rgba(161, 165, 193, 0.8);
+    border-radius: 10px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 9 / 16;
+    margin-bottom: 10px;
+}
+
+.capture-button {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    background: rgba(12, 0, 115, 0.448);
+
+    border: none;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.capture-button:after {
+    content: "";
+    background: #e678af;
+    /* Lighter shade for animation */
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    opacity: 1;
+    transition: 0s;
+    z-index: 0;
+}
+
+.capture-button:active:after {
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    opacity: 0;
+    transition: all 0.4s;
+}
+
+.previewImages {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    /* margin-top: 10px; */
+}
+
+.img-preview {
+    width: 85px;
+    object-fit: contain;
+    border-radius: 10%;
+}
+
+.max-limit-info {
+    text-align: center;
+    color: red;
+    font-size: 14px;
+}
+
+.upload-button {
+    margin-top: 10px;
+    width: 100px;
+    height: 30px;
+    border-radius: 5px;
+    background: #3FB648;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .capture-button {
+        bottom: 40px;
+        /* Adjusted position for mobile */
+        width: 40px;
+        /* Smaller size for mobile */
+        height: 40px;
+        /* Smaller size for mobile */
+        background: rgba(151, 16, 120, 0.7);
+        /* Slightly more transparent for mobile */
+    }
+}
+
+
+/* IMAGE MODAL ------------------ */
+/* Add styles for the modal */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 800px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+.close-modal-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+.img-carousel {
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    /* Ensure the image fits within the viewport */
+    object-fit: contain;
+    /* Maintain aspect ratio */
+}
