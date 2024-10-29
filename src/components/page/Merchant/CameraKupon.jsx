@@ -24,24 +24,29 @@ const CameraKupon = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
 
+    // useEffect for camera selection and device enumeration
     useEffect(() => {
-        const fetchCameraAndLocation = async () => {
+        const fetchCameraDevices = async () => {
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const videoDevices = devices.filter(device => device.kind === 'videoinput');
-                console.log(videoDevices);
-
                 setCameraDevices(videoDevices);
 
-                // Prioritize rear camera, fallback to front camera if rear is not found
+                // Prefer rear camera; fallback to the first camera if rear is unavailable
                 const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('rear'));
                 const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front')) || videoDevices[0];
-
                 setSelectedCamera(rearCamera ? rearCamera.deviceId : frontCamera.deviceId);
             } catch (error) {
                 console.error('Error enumerating devices:', error);
             }
+        };
 
+        fetchCameraDevices();
+    }, []);
+
+    // useEffect for location and timestamp on load
+    useEffect(() => {
+        const fetchLocationAndTime = () => {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
@@ -59,12 +64,13 @@ const CameraKupon = () => {
             setCaptureTime(moment().format('YYYY-MM-DD HH:mm:ss'));
         };
 
-        fetchCameraAndLocation();
-    }, []); // Removed dependencies that cause unnecessary re-renders
+        fetchLocationAndTime();
+    }, []);
 
     const handleCameraChange = (event) => {
         const newCamera = event.target.value;
         setSelectedCamera(newCamera);
+        console.log("Selected camera ID:", newCamera); // Log the updated camera selection immediately
     };
 
     useEffect(() => {
@@ -263,6 +269,11 @@ const CameraKupon = () => {
                 >
                     <IconSquareRoundedX />
                 </button>
+            </div>
+            <div className="">
+                {cameraDevices.map((device, index) => (
+                    <p>{device.label || `Camera ${index + 1}`}</p>
+                ))}
             </div>
             <div className="relative w-full max-w-4xl h-[600px] bg-gray-800 rounded-lg overflow-hidden shadow-lg">
                 <Webcam
