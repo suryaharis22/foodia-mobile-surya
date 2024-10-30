@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import moment from "moment";
+import 'moment/locale/id';
 
 const YourComponent = () => {
+    moment.locale('id');
     const [dataNote, setDataNote] = useState({});
+    const [month, setMonth] = useState(moment().format('YYYY-MMM'));
+    useEffect(() => {
+        setMonth(moment().format('YYYY-MMM'));
+    }, []);
 
     useEffect(() => {
         // Example response
@@ -39,6 +46,9 @@ const YourComponent = () => {
             <p className={dataNote.linkajaNumber ? 'text-black' : 'text-red-500'}>Linkaja Number Status</p>
             <p className={dataNote.address ? 'text-black' : 'text-red-500'}>Address Status</p>
             <p>{dataNote.phoneNumber}</p>
+            <div>
+                <p>Current Month: {month}</p>
+            </div>
         </div>
     );
 };

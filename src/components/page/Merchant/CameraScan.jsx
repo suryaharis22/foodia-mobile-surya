@@ -23,7 +23,7 @@ const CameraScan = () => {
         setDevices(videoDevices);
 
         if (videoDevices.length > 0) {
-            // Automatically select the rear camera if available
+            // Pilih kamera belakang jika tersedia
             const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('back')) || videoDevices[0];
             setSelectedDevice(rearCamera.deviceId);
         }
@@ -31,7 +31,6 @@ const CameraScan = () => {
     };
 
     useEffect(() => {
-        // Request camera access permission when the component is mounted
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(() => {
                 navigator.mediaDevices.enumerateDevices().then(handleDevices);
@@ -44,10 +43,32 @@ const CameraScan = () => {
                     title: 'akses kamera ditolak',
                     text: 'Mohon aktifkan akses kamera browser anda.',
                 }).then(() => {
-                    router.back(); // Navigate back if permission is denied
+                    router.back();
                 });
             });
     }, []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setAspectRatio(window.innerWidth <= 768 ? 4 / 3 : 16 / 9);
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const handleClose = () => {
+        router.back();
+    };
+
+    const videoConstraints = {
+        deviceId: selectedDevice ? { exact: selectedDevice } : undefined,
+        aspectRatio: aspectRatio,
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -74,13 +95,12 @@ const CameraScan = () => {
                     img.src = imageSrc;
                 }
             }
-        }, 1000); // Check every second
+        }, 1000);
 
         return () => clearInterval(interval);
     }, [webcamRef, processedCodes]);
 
     const PostCode = (code) => {
-
         if (code) {
             axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}coupon/scan`, {
                 qr_code: code,
@@ -107,28 +127,6 @@ const CameraScan = () => {
                     Error401(error, router);
                 });
         }
-    };
-
-    useEffect(() => {
-        const handleResize = () => {
-            setAspectRatio(window.innerWidth <= 768 ? 4 / 3 : 16 / 9);
-        };
-
-        handleResize();
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    const handleClose = () => {
-        router.back();
-    };
-
-    const videoConstraints = {
-        deviceId: selectedDevice ? { exact: selectedDevice } : undefined,
-        aspectRatio: aspectRatio,
     };
 
     return (
