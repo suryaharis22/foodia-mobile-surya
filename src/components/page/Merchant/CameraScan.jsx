@@ -118,15 +118,19 @@ const CameraScan = () => {
             });
     };
 
+    const hendleClose = () => {
+        router.back();
+    }
+
     return (
-        <div className="w-full flex flex-col items-center bg-white h-screen">
-            <div className="flex justify-between items-center w-full px-2 my-2">
-                <h1>QR Code Scanner</h1>
-                <button onClick={() => router.back()} className="bg-[#DE0606] rounded-md p-1 font-bold flex items-center justify-center cursor-pointer">
-                    <IconSquareRoundedX size={15} className="text-black" />
+        <div className="flex flex-col items-center w-full h-screen bg-white">
+            <div className="flex items-center justify-between w-full px-4 py-2">
+                <h1 className="text-xl font-bold">QR Code Scanner</h1>
+                <button onClick={hendleClose} className="flex items-center justify-center p-2 font-bold text-black bg-red-600 rounded-md cursor-pointer">
+                    <IconSquareRoundedX size={15} />
                 </button>
             </div>
-            <div className="bg-gray-300 p-2 rounded-md flex flex-col justify-center mt-2">
+            <div className="flex flex-col items-center justify-center w-full p-4 mt-4 bg-gray-300 rounded-md">
                 {loading ? (
                     <Loading />
                 ) : (
@@ -138,8 +142,9 @@ const CameraScan = () => {
                             height={320}
                             screenshotFormat="image/jpeg"
                             videoConstraints={{ deviceId: selectedCamera ? { exact: selectedCamera } : undefined }}
+                            className="rounded-md"
                         />
-                        <select onChange={handleCameraChange} value={selectedCamera} className="my-2 p-2 bg-white text-black rounded-md">
+                        <select onChange={handleCameraChange} value={selectedCamera} className="w-full p-2 mt-2 bg-white text-black rounded-md">
                             {cameraDevices.map((device, index) => (
                                 <option key={index} value={device.deviceId}>
                                     {device.label || `Camera ${index + 1}`}
@@ -150,6 +155,7 @@ const CameraScan = () => {
                 )}
             </div>
         </div>
+
     );
 };
 
