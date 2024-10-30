@@ -126,7 +126,7 @@ const CameraScan = () => {
                     <IconSquareRoundedX size={15} className="text-black" />
                 </div>
             </div>
-            <div className="bg-gray-300 p-2 rounded-md flex flex-col justify-center">
+            <div className="bg-gray-300 p-2 rounded-md flex flex-col justify-center mt-2">
                 {loading ? (
                     <Loading />
                 ) : (
@@ -139,7 +139,7 @@ const CameraScan = () => {
                             screenshotFormat="image/jpeg"
                             videoConstraints={{ deviceId: selectedCamera ? { exact: selectedCamera } : undefined }}
                         />
-                        <select onChange={handleCameraChange} value={selectedCamera} className="my-2 p-2 bg-blue-500 text-white rounded-md">
+                        <select onChange={handleCameraChange} value={selectedCamera} className="my-2 p-2 bg-white text-black rounded-md">
                             {cameraDevices.map((device, index) => (
                                 <option key={index} value={device.deviceId}>
                                     {device.label || `Camera ${index + 1}`}
