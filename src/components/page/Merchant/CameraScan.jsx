@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from 'jsqr';
 import axios from 'axios';
-import Error401 from '@/components/error401';
 import { useRouter } from 'next/router';
 import { IconSquareRoundedX, IconCameraRotate } from '@tabler/icons-react';
 import Swal from 'sweetalert2';
@@ -12,29 +11,42 @@ const CameraScan = () => {
     const router = useRouter();
     const webcamRef = useRef(null);
     const [loading, setLoading] = useState(true);
-    const [facingMode, setFacingMode] = useState("environment");
+    const [cameraDevices, setCameraDevices] = useState([]);
+    const [selectedCamera, setSelectedCamera] = useState('');
     const [processedCodes, setProcessedCodes] = useState(new Set());
 
     useEffect(() => {
-        // Request camera access permission when the component is mounted
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(() => setLoading(false))
-            .catch((error) => {
-                console.error('Permission denied or not supported:', error);
+        const fetchCameraDevices = async () => {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                setCameraDevices(videoDevices);
+
+                // Prefer rear camera; fallback to front if unavailable
+                const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('rear'));
+                const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front')) || videoDevices[0];
+                setSelectedCamera(rearCamera ? rearCamera.deviceId : frontCamera.deviceId);
                 setLoading(false);
+            } catch (error) {
+                console.error('Error enumerating devices:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Akses kamera ditolak',
-                    text: 'Mohon aktifkan akses kamera browser Anda.',
+                    title: 'Error',
+                    text: 'Could not access camera devices. Please enable camera permissions.',
                 }).then(() => {
                     router.back(); // Navigate back if permission is denied
                 });
-            });
+                setLoading(false);
+            }
+        };
+
+        fetchCameraDevices();
     }, []);
 
-    // Handle camera toggle between front and back
-    const toggleCamera = () => {
-        setFacingMode((prevMode) => (prevMode === "environment" ? "user" : "environment"));
+    const handleCameraChange = (event) => {
+        const newCamera = event.target.value;
+        setSelectedCamera(newCamera);
+        console.log("Selected camera ID:", newCamera);
     };
 
     useEffect(() => {
@@ -48,7 +60,7 @@ const CameraScan = () => {
         }, 1000); // Check every second
 
         return () => clearInterval(interval);
-    }, [processedCodes]);
+    }, [processedCodes, selectedCamera]);
 
     const processQRCode = (imageSrc) => {
         const canvas = document.createElement('canvas');
@@ -62,12 +74,12 @@ const CameraScan = () => {
             const imageData = context.getImageData(0, 0, img.width, img.height);
             const code = jsQR(imageData.data, img.width, img.height);
 
+
+
             if (code) {
                 const qrCode = code.data;
-                if (!processedCodes.has(qrCode)) {
-                    setProcessedCodes(prev => new Set(prev).add(qrCode));
-                    PostCode(qrCode);
-                }
+                console.log("Scanned code:", code.data);
+                PostCode(qrCode);
             }
         };
 
@@ -75,6 +87,8 @@ const CameraScan = () => {
     };
 
     const PostCode = (code) => {
+        console.log("Scanned code:", code);
+
         axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}coupon/scan`, { qr_code: code }, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -91,11 +105,16 @@ const CameraScan = () => {
                         router.push('/merchant/kupon');
                     });
                 } else {
-                    Error401(response, router);
+                    console.error("Error scanning QR code:", response);
                 }
             })
             .catch((error) => {
-                Error401(error, router);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed QR Code expired',
+                    timer: 2000,
+                })
             });
     };
 
@@ -107,27 +126,29 @@ const CameraScan = () => {
                     <IconSquareRoundedX size={15} className="text-black" />
                 </div>
             </div>
-            <div className="bg-gray-300 p-2 rounded-md">
+            <div className="bg-gray-300 p-2 rounded-md flex flex-col justify-center">
                 {loading ? (
                     <Loading />
                 ) : (
-                    <Webcam
-                        audio={false}
-                        ref={webcamRef}
-                        width={320}
-                        height={320}
-                        screenshotFormat="image/jpeg"
-                        videoConstraints={{ facingMode }}
-                    />
+                    <>
+                        <Webcam
+                            audio={false}
+                            ref={webcamRef}
+                            width={320}
+                            height={320}
+                            screenshotFormat="image/jpeg"
+                            videoConstraints={{ deviceId: selectedCamera ? { exact: selectedCamera } : undefined }}
+                        />
+                        <select onChange={handleCameraChange} value={selectedCamera} className="my-2 p-2 bg-blue-500 text-white rounded-md">
+                            {cameraDevices.map((device, index) => (
+                                <option key={index} value={device.deviceId}>
+                                    {device.label || `Camera ${index + 1}`}
+                                </option>
+                            ))}
+                        </select>
+                    </>
                 )}
             </div>
-            <button
-                onClick={toggleCamera}
-                className="my-2 p-2 bg-blue-500 text-white rounded-md flex items-center focus:outline-none"
-            >
-                <IconCameraRotate size={20} className="mr-2" />
-                Switch Camera
-            </button>
         </div>
     );
 };
