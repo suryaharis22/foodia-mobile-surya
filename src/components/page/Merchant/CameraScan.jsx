@@ -122,9 +122,9 @@ const CameraScan = () => {
         <div className="w-full flex flex-col items-center bg-white h-screen">
             <div className="flex justify-between items-center w-full px-2 my-2">
                 <h1>QR Code Scanner</h1>
-                <div onClick={() => router.back()} className="bg-[#DE0606] rounded-md p-1 font-bold flex items-center justify-center cursor-pointer">
+                <button onClick={() => router.back()} className="bg-[#DE0606] rounded-md p-1 font-bold flex items-center justify-center cursor-pointer">
                     <IconSquareRoundedX size={15} className="text-black" />
-                </div>
+                </button>
             </div>
             <div className="bg-gray-300 p-2 rounded-md flex flex-col justify-center mt-2">
                 {loading ? (
