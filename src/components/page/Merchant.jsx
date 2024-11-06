@@ -16,40 +16,9 @@ const Merchant = () => {
   const [dataApi, setDataApi] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("approved");
-  // const [cekData, setCekData] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
-
-  const getMenus = (id, token) => {
-    axios
-      .get(
-        process.env.NEXT_PUBLIC_API_BASE_URL +
-        `merchant-product/filter?merchant_id=${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        setDataApi(response.data.body);
-        const filtered = response.data.body.filter(
-          (data) => data.status === "approved"
-        );
-        setFilteredData(filtered);
-
-        setLoading(false);
-
-        if (response.data.body.length === 0) {
-          setHasMore(false);
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        Error401(error, router);
-      });
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,14 +27,13 @@ const Merchant = () => {
       Swal.fire({
         icon: "error",
         title: "Akses Dibatasi",
-        text: ` Mohon untuk login kembali menggunakan akun Merchant.`,
+        text: "Mohon untuk login kembali menggunakan akun Merchant.",
         showConfirmButton: true,
         confirmButtonText: "Login",
         confirmButtonColor: "green",
         showCancelButton: true,
         cancelButtonText: "Tutup",
         cancelButtonColor: "red",
-        // timer: 2000,
       }).then((result) => {
         if (result.isConfirmed) {
           router.push("/login");
@@ -86,23 +54,15 @@ const Merchant = () => {
         .then((response) => {
           const cekData = response.data.body;
 
-          if (cekData.beneficiaries?.status === "waiting") {
+          if (cekData.beneficiaries?.status === "approved") {
+            handleBeneficiariesApproved();
+          } else if (cekData.beneficiaries?.status === "waiting") {
             alertCekRegis('beneficiaries');
           } else if (cekData.detonator?.status === "waiting") {
             alertCekRegis('detonator');
           } else {
             if (cekData.beneficiaries?.status === "approved") {
-              Swal.fire({
-                icon: "warning",
-                title: "Akun Telah Terdaftar Sebagai Beneficiary",
-                text: "Anda Tidak Dapat Mendaftar Sebagai Merchant",
-                showConfirmButton: false,
-                showCancelButton: true,
-                cancelButtonColor: "red",
-                cancelButtonText: "Tutup",
-              }).then((result) => {
-                router.push("/home");
-              });
+              handleBeneficiariesApproved();
             } else {
               if (!cekData.merchant) {
                 Swal.fire({
@@ -143,23 +103,35 @@ const Merchant = () => {
                     }
                   });
                 } else if (cekData.merchant.status === "rejected") {
+                  const noteRejected = {
+                    FullName: '',
+                    NameMerchant: '',
+                    LinkAjaNumber: '',
+                    PhoneNumber: '',
+                    KTPNumber: '',
+                    KTPPhoto: '',
+                    SelfPhoto: '',
+                    MerchantPhoto: '',
+                    Address: '',
+                  };
+                  let responseObject = {};
+                  if (cekData.merchant?.note) {
+                    responseObject = cekData.merchant.note.split('|').reduce((acc, pair) => {
+                      const [key, value] = pair.split(':');
+                      if (key && noteRejected.hasOwnProperty(key.trim())) {
+                        acc[key.trim()] = value ? value.trim() : '';
+                      }
+                      return acc;
+                    }, {});
+                  }
+
+                  const errorObject = { ...noteRejected, ...responseObject };
                   setLoading(false);
                   localStorage.setItem("id", cekData.merchant.merchant_id);
                   localStorage.setItem("role", "merchant");
                   localStorage.setItem("status", cekData.merchant.status);
                   localStorage.setItem("note", cekData.merchant.note);
-
-                  Swal.fire({
-                    icon: "warning",
-                    title: "Merchant ditolak",
-                    text: `${cekData.merchant.note}`,
-                    showConfirmButton: false,
-                    timer: 2000,
-                  });
-
-                  setTimeout(() => {
-                    router.push("/merchant/edit-merchant?step=1");
-                  }, 2000);
+                  handleRejectedStatus(errorObject);
                 } else {
                   localStorage.setItem("id", cekData.merchant.merchant_id);
                   localStorage.setItem("role", "merchant");
@@ -175,8 +147,96 @@ const Merchant = () => {
           Error401(error, router);
         });
     }
-
   }, []);
+
+  const handleBeneficiariesApproved = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "Akun Telah Terdaftar Sebagai Beneficiaries",
+      text: "Anda Tidak Dapat Mendaftar Sebagai Merchant",
+      showConfirmButton: false,
+      showCancelButton: true,
+      cancelButtonColor: "red",
+      cancelButtonText: "Tutup",
+    }).then(() => {
+      router.push("/home");
+    });
+  };
+
+  const handleRejectedStatus = (errorObject) => {
+    setLoading(false);
+    Swal.fire({
+      icon: "warning",
+      title: "Merchant ditolak",
+      html: `
+        <ul class="max-w-md space-y-2 text-gray-500 list-inside dark:text-gray-400">
+          ${Object.entries(errorObject)
+          .filter(([_, value]) => value)
+          .map(
+            ([key, value]) => `
+                <li class="flex items-start">
+                  <span class="font-medium text-gray-700 whitespace-nowrap">${formatKey(key)}:</span> 
+                  <span class="text-red-600 truncate">${value}</span>
+                </li>`
+          )
+          .join("")}
+        </ul>
+      `,
+      showConfirmButton: false,
+      timer: 4000,
+    });
+
+    setTimeout(() => {
+      router.push("/merchant/edit-merchant?step=1");
+    }, 4000);
+  };
+
+  const formatKey = (key) => {
+    const keyMap = {
+      FullName: "Nama Lengkap",
+      NameMerchant: "Nama Merchant",
+      LinkAjaNumber: "Nomor LinkAja",
+      PhoneNumber: "Nomor Telepon",
+      KTPNumber: "Nomor KTP",
+      KTPPhoto: "Foto KTP",
+      SelfPhoto: "Foto Diri",
+      MerchantPhoto: "Foto Merchant",
+      Address: "Alamat",
+    };
+    return keyMap[key] || key; // Mengembalikan nilai dari keyMap atau key itu sendiri jika tidak ada di keyMap
+  };
+
+  const getMenus = (id, token) => {
+    axios
+      .get(
+        process.env.NEXT_PUBLIC_API_BASE_URL +
+        `merchant-product/filter?merchant_id=${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setDataApi(response.data.body);
+        const filtered = response.data.body.filter(
+          (data) => data.status === "approved"
+        );
+        setFilteredData(filtered);
+
+        setLoading(false);
+
+        if (response.data.body.length === 0) {
+          setHasMore(false);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        Error401(error, router);
+      });
+  };
+
+
 
   const alertCekRegis = (nameRole) => {
     Swal.fire({

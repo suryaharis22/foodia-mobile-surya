@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,8 +41,9 @@ const Home = () => {
     <main className="my-0 mx-auto min-h-full mobile-w">
       <div className="my-0 mx-auto min-h-screen mobile-w overflow-x-hidden bg-white flex flex-col">
         <Hero />
-        <div className="top-0 absolute px-32 pt-28 text-white font-bold text-4xl">
-          <h1 className="text-4xl text-white font-bold">FOODIA</h1>
+        <div className="absolute top-[100px] px-24  ">
+          <Image src="/img/LogoFoodia.png" alt="logo" width={200} height={0} className="w-[200px]  object-cover" />
+
         </div>
         <div className="flex flex-col pt-5 items-center justify-center gap-2">
           <label className="text-primary text-4xl font-bold">
@@ -68,13 +70,21 @@ const Home = () => {
             Daftar
           </Link>
         </div>
-        <div className="mobile-w flex gap-1 justify-center pt-10">
-          <label className="font-light text-sm">Buka aplikasi tanpa</label>
+        <div className="mobile-w flex flex-col items-center gap-1 justify-center pt-10">
+          <div className="flex gap-1">
+            <label className="font-light text-sm">Buka aplikasi tanpa</label>
+            <Link
+              className="text-blue-950 font-bold hover:underline text-sm"
+              href="/home"
+            >
+              Masuk
+            </Link>
+          </div>
           <Link
-            className="text-blue-950 font-bold hover:underline text-sm"
-            href="/home"
+            className="text-blue-400 hover:underline text-[11px]"
+            href="/T&C"
           >
-            Masuk
+            Syarat dan Ketentuan
           </Link>
         </div>
       </div>

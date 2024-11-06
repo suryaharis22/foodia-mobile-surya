@@ -1,4 +1,5 @@
 import {
+  IconBuildingStore,
   IconCamera,
   IconCircleCheck,
   IconCircleX,
@@ -29,6 +30,7 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
   // const { stepForm } = props;
   const router = useRouter();
   const [loadingSelfi, setLoadingSelfi] = useState(false);
+  const [loadingMerchantPhoto, setLoadingMerchantPhoto] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingKTP, setLoadingKTP] = useState(false);
   const [merchant_name, setmerchant_name] = useState(
@@ -40,8 +42,12 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
   const [self_photo, setself_photo] = useState(
     registrasiMerchant?.self_photo || null
   );
+
   const [ktp_photo, setktp_photo] = useState(
     registrasiMerchant?.ktp_photo || null
+  );
+  const [merchant_photo, setmerchant_photo] = useState(
+    registrasiMerchant?.merchant_photo || null
   );
   const [no_link_aja, setno_link_aja] = useState(
     registrasiMerchant?.no_link_aja ?? ""
@@ -121,6 +127,52 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
         });
     }
   };
+  const handlemerchant_photoChange = (event) => {
+    const file = event.target.files[0];
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/heif", "image/heic"];
+    const maxSize = 5 * 1024 * 1024;
+    if (!file) {
+      return;
+    }
+    setLoadingMerchantPhoto(true);
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Hanya file PNG, JPG, JPEG dan HEIF yang diizinkan!",
+      });
+      setLoadingMerchantPhoto(false);
+      return;
+    }
+    if (file.size <= maxSize) {
+      setmerchant_photo(file);
+      setLoadingMerchantPhoto(false);
+    } else {
+      CompressImage(file)
+        .then((compressedFile) => {
+          const size = (compressedFile.size / (1024 * 1024)).toFixed(2);
+          if (size <= maxSize) {
+            setmerchant_photo(compressedFile);
+          } else {
+            Toast.fire({
+              icon: 'error',
+              title: 'Ukuran gambar melebihi 5MB!',
+              iconColor: 'bg-black',
+            })
+          }
+          setLoadingMerchantPhoto(false);
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Ukuran gambar melebihi 5MB!",
+          });
+          setLoadingMerchantPhoto(false);
+          setLoading(false)
+        });
+    }
+  };
   const handlektp_photoChange = (event) => {
     const file = event.target.files[0];
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/heif", "image/heic"];
@@ -188,6 +240,7 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
       ktp_number,
       self_photo,
       ktp_photo,
+      merchant_photo,
       no_link_aja,
     };
 
@@ -199,6 +252,7 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
     setktp_number("");
     setself_photo("");
     setktp_photo("");
+    setmerchant_photo("");
 
     router.push("/registrasi/merchant?step=2");
   };
@@ -235,13 +289,13 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
           liCss={`flex w-20 items-center after:content-[''] after:w-full after:h-1 after:inline-block after:border-b after:border-4 after:border-primary`}
           divCss={`flex items-center justify-center w-10 h-10 rounded-full lg:h-9 lg:w-9 shrink-0 bg-primary`}
           iconCss={`w-4 h-4 text-white lg:w-6 lg:h-6 `}
-          iconName={"User"}
+          iconName={"BuildingStore"}
         />
         <RoutStep
           liCss={`flex items-center`}
           divCss={`flex items-center justify-center w-10 h-10  rounded-full lg:h-9 lg:w-9 shrink-0 bg-gray-300`}
           iconCss={`w-4 h-4 lg:w-6 lg:h-6 text-white`}
-          iconName={"BuildingStore"}
+          iconName={"Map2"}
         />
       </ol>
       <hr className="w-full h-1 mx-auto mt-2 bg-gray-300 border-0 rounded" />
@@ -256,29 +310,27 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
       </div>
       <div className="p-2 w-full space-y-3 px-7">
         <div>
-          <div className="flex flex-row p-4 py-0 bg-gray-100 text-gray-400 text-sm rounded-lg focus:ring-blue-500 w-full focus:border-none pr-2">
-            <IconUser className="mt-3.5" />
-            <textarea
-              maxLength={120}
-              onChange={handlemerchant_nameChange}
+          <div className="flex flex-row items-center p-4 py-0 bg-gray-100 text-gray-400 text-sm rounded-lg focus:ring-blue-500 w-full focus:border-none pr-2">
+            <IconBuildingStore />
+            <input
               value={merchant_name}
+              onChange={handlemerchant_nameChange}
               type="text"
-              className="ml-2 w-full text-black min-h-[95px] p-0 py-4 pl-1 bg-transparent focus:border-none outline-none"
+              maxLength={120} // Batasi panjang input hingga 120 karakter
+              className="ml-2 w-full p-0 py-4 pl-1 text-black bg-transparent focus:border-none  outline-none"
               placeholder="Nama Toko"
               required
-              style={{ resize: "none" }}
             />
-            {/* <IconCircleCheck
+            {/* Menambahkan indikator validasi */}
+            <IconCircleCheck
               className={validName ? "text-green-600" : "hidden"}
             />
             <IconCircleX
-              className={
-                !merchant_name || validName ? "hidden" : "text-red-600"
-              }
-            /> */}
+              className={!merchant_name || validName ? "hidden" : "text-red-600"}
+            />
           </div>
           <p className="text-gray-400 text-end text-xs">
-            <span className={merchant_name.length > 64 && "text-red-400"}>
+            <span className={merchant_name.length > 64 ? "text-red-400" : ""}>
               {merchant_name.length}
             </span>
             /64
@@ -413,7 +465,7 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
                   e.preventDefault();
                 }
               }}
-              id="email"
+              id="ktp_number"
               className="ml-2 w-full p-0 py-4 pl-1 text-black outline-nones bg-transparent focus:border-none"
               placeholder="No. KTP"
               required
@@ -439,12 +491,51 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
           </p>
         </div>
 
+        <div className="mb-2">
+          <div className="flex items-start justify-center w-full relative">
+            <label htmlFor="merchant_photo" className="flex flex-col items-start justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-200 dark:hover:bg-gray-400 hover:bg-gray-100">
+              {loadingMerchantPhoto && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 rounded-lg">
+                  <svg aria-hidden="true" className="w-12 h-12 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                  </svg>
+                </div>
+              )}
+              {merchant_photo ? (
+                <img
+                  src={URL.createObjectURL(merchant_photo)}
+                  alt="Foto Toko"
+                  className="w-full h-full rounded-lg object-cover"
+                />
+              ) : (
+                <div className="flex flex-row items-center justify-center gap-2 pl-2">
+                  <div className="flex h-24 flex-row items-center justify-center bg-primary rounded-lg w-28">
+                    <IconCamera size={50} fontWeight={1} color="white" />
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <p className="text-sm font-bold">Foto Toko</p>
+                    <p className="text-xs">Ambil foto Toko kamu</p>
+                  </div>
+                </div>
+              )}
+              <input
+                id="merchant_photo"
+                type="file"
+                className="hidden"
+                onChange={handlemerchant_photoChange}
+              />
+            </label>
+          </div>
+        </div>
+
         <div className="grid gap-4 content-center">
           <button
             disabled={
               !merchant_name ||
               !ktp_number ||
               !self_photo ||
+              !merchant_photo ||
               !ktp_photo ||
               !validPhone ||
               !validKTP ||
@@ -457,6 +548,7 @@ function StepOne({ registrasiMerchant, setRegistrasiMerchant }) {
               !merchant_name ||
                 !ktp_number ||
                 !self_photo ||
+                !merchant_photo ||
                 !ktp_photo ||
                 !validPhone ||
                 !validKTP ||
@@ -535,7 +627,6 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
       setSubDistrict(locationInfo.sub_district);
       setPostalCode(locationInfo.postal_code);
       setCoordinates(locationInfo.coordinates);
-      // setJalan(locationInfo.address);
     }
   }, [locationInfo]);
 
@@ -543,6 +634,7 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
     setLoading(true);
     if (
       !address ||
+      !DetaiAlamat ||
       !province ||
       !city ||
       !sub_district ||
@@ -552,6 +644,7 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
       window.alert("All fields are required");
       return;
     }
+
     setRegistrasiMerchant((prevData) => ({
       ...prevData,
       address,
@@ -563,6 +656,9 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
       longitude: coordinates.lng,
       DetaiAlamat,
     }));
+    const addressDetail = `${address} (${DetaiAlamat})`
+
+
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/login");
@@ -581,12 +677,13 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
     formData.append("merchant_name", registrasiMerchant?.merchant_name);
     formData.append("ktp_number", registrasiMerchant?.ktp_number);
     formData.append("self_photo", registrasiMerchant?.self_photo);
+    formData.append("merchant_photo", registrasiMerchant?.merchant_photo);
     formData.append("ktp_photo", registrasiMerchant?.ktp_photo);
     formData.append("province", province);
     formData.append("city", city);
     formData.append("sub_district", sub_district);
     formData.append("postal_code", postal_code);
-    formData.append("address", address);
+    formData.append("address", addressDetail);
     formData.append("latitude", coordinates.lat);
     formData.append("longitude", coordinates.lng);
     formData.append("no_link_aja", registrasiMerchant?.no_link_aja);
@@ -647,10 +744,12 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
           });
         } else {
           setLoading(false);
-          SweetAlert({
-            title: "",
-            text: `${error.response.data.message}`,
-            width: 350,
+          Swal.fire({
+            icon: "error",
+            title: "Terjadi Kesalahan",
+            text: "Data yang Anda masukkan tidak dapat diproses. Mohon periksa kembali informasi yang Anda berikan.",
+            confirmButtonText: "Tutup",
+            confirmButtonColor: "#ef4444",
           });
         }
         // router.push("/registrasi/merchant?step=3");
@@ -664,13 +763,13 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
           liCss={`flex w-20 items-center after:content-[''] after:w-full after:h-1 after:inline-block after:border-b after:border-4 after:border-primary`}
           divCss={`flex items-center justify-center w-10 h-10 rounded-full lg:h-9 lg:w-9 shrink-0 bg-primary`}
           iconCss={`w-4 h-4 text-white lg:w-6 lg:h-6 `}
-          iconName={"User"}
+          iconName={"BuildingStore"}
         />
         <RoutStep
           liCss={`flex items-center`}
           divCss={`flex items-center justify-center w-10 h-10  rounded-full lg:h-9 lg:w-9 shrink-0 bg-primary`}
           iconCss={`w-4 h-4 lg:w-6 lg:h-6 text-white`}
-          iconName={"BuildingStore"}
+          iconName={"Map2"}
         />
       </ol>
       <hr className="w-full h-1 mx-auto mt-2 bg-gray-300 border-0 rounded" />
@@ -770,6 +869,7 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
               disabled={
                 !address ||
                 !province ||
+                !DetaiAlamat ||
                 !city ||
                 !sub_district ||
                 !postal_code ||
@@ -778,6 +878,7 @@ function StepTwo({ registrasiMerchant, setRegistrasiMerchant }) {
               type="submit"
               className={
                 !address ||
+                  !DetaiAlamat ||
                   !province ||
                   !city ||
                   !sub_district ||

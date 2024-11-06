@@ -48,7 +48,7 @@ const ProfileMerchant = ({ id = 0, merchantStatus, MerchantUpdateProfile }) => {
                   </div>
                 )}
               </div>
-              <div className="text-left place-items-center">
+              <div className="text-left flex flex-col justify-center">
                 <div className=" text-primary">Merchant</div>
                 <div className=" text-xs">
                   {merchantStatus === "approved"

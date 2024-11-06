@@ -8,6 +8,7 @@ const ScanKupon = () => {
     const { id } = router.query;
 
 
+
     return (
         <main className="my-0 mx-auto min-h-full mobile-w">
             <CameraScan />

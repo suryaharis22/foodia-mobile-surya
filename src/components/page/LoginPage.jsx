@@ -14,6 +14,7 @@ import Header from "../Header";
 import Loading from "../Loading";
 import { useAppState } from "./UserContext";
 import Error401 from "../error401";
+import Image from "next/image";
 
 const LoginPage = () => {
   const [inputEmail, setEmail] = useState("");
@@ -214,7 +215,14 @@ const LoginPage = () => {
     <div className="container mx-auto mt-24">
       <Header backto="/" />
       <div className="flex justify-center ">
-        <h1 className="text-4xl text-primary font-bold">FOODIA</h1>
+        <Image src="/img/LogoFoodia.png" alt="logo" width={200} height={0} className="w-[200px]  object-cover" />
+        {/* <Image
+          src="/img/LogoFoodia.png"
+          alt="logo"
+          width={0}
+          height={0}
+          className="w-[200px]  object-cover" />
+        <h1 className="text-4xl text-primary font-bold">FOODIA</h1> */}
       </div>
 
       <div className="p-4 mt-32 flex flex-col gap-2">
@@ -282,11 +290,10 @@ const LoginPage = () => {
             disabled={!inputEmail || !inputPassword || !inputCaptcha}
             onClick={checkCaptcha}
             type="submit"
-            className={`text-white ${
-              !inputEmail || !inputPassword || !inputCaptcha
-                ? "bg-slate-400"
-                : "bg-primary"
-            } outline-none focus:ring-gray-300 font-bold rounded-xl text-md w-full sm:w-auto py-2 text-center `}
+            className={`text-white ${!inputEmail || !inputPassword || !inputCaptcha
+              ? "bg-slate-400"
+              : "bg-primary"
+              } outline-none focus:ring-gray-300 font-bold rounded-xl text-md w-full sm:w-auto py-2 text-center `}
           >
             Masuk
           </button>

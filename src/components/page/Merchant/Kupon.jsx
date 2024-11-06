@@ -133,19 +133,19 @@ const Kupon = () => {
             <div class="text-justify text-[14px]">
               <ul class="list-decimal font-bold space-y-2">
                 <li class="mb-4">
-                  <p class="italic font-normal text-primary">
+                  <p class="font-semibold font-normal text-primary">
                     Anda akan menerima pembayaran setelah selesai melaporkan kegiatan pemberian makan 
                     <span class="not-italic text-black"> kepada penerima manfaat menggunakan fitur kupon. Foto yang harus dilaporkan:</span>
                   </p>
                   <ul class="list-alpha ml-6 font-bold space-y-1">
                     <li>
-                      <p class="italic font-normal text-primary">
+                      <p class="font-semibold font-normal text-primary">
                         Melaporkan foto makanan yang disajikan 
                         <span class="not-italic text-black"> sesuai pesanan pada kupon makan</span>
                       </p>
                     </li>
                     <li>
-                      <p class="italic font-normal text-primary">
+                      <p class="font-semibold font-normal text-primary">
                         Melaporkan foto wajah Penerima Manfaat 
                         <span class="not-italic text-black"> yang mengklaim Kupon Makan</span>
                       </p>
@@ -269,6 +269,7 @@ const Kupon = () => {
               filteredData.map((data) => (
                 <CardKupon
                   key={data.id}
+                  userRole={`merchant`}
                   // to={data.order_status === "reserved" ? `/merchant/scan-kupon/${data.id}` : data.order_status === "approved" ? `/merchant/pesanan/${data.id}` : "/"}
                   total_tax={data.total_tax * data.qty}
                   idOrder={data.id}

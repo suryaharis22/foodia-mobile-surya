@@ -3,15 +3,15 @@ import Error401 from "@/components/error401";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import CardKupon from "@/components/page/Merchant/CardKupon";
-import { IconMapPin } from "@tabler/icons-react";
+import { IconMapPin, IconX } from "@tabler/icons-react";
 import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Carousel } from "react-responsive-carousel";
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import Modal from 'react-modal';
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import Modal from "react-modal";
 
 const DetailKupon = () => {
     const router = useRouter();
@@ -23,26 +23,16 @@ const DetailKupon = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [imgMakan, setImgMakan] = useState([]);
     const [imgPenerima, setImgPenerima] = useState([]);
-    const [dataCarousel, setDataCarousel] = useState('');
+    const [dataCarousel, setDataCarousel] = useState("");
     const [prevPath, setPrevPath] = useState("");
 
-    useEffect(() => {
-        setPrevPath(localStorage.getItem("prevPath"));
-    }, [prevPath]);
+    // useEffect(() => {
+    //     setPrevPath(localStorage.getItem("prevPath"));
+    // }, [prevPath]);
 
     useEffect(() => {
-        const role = localStorage.getItem("role");
         const token = localStorage.getItem("token");
-        const status = localStorage.getItem("status");
-        const id = localStorage.getItem("id");
-
-        if (
-            !role ||
-            !token ||
-            role !== "beneficiaries" ||
-            status !== "approved" ||
-            !id
-        ) {
+        if (!token) {
             // Redirect to login if either role or token is missing or role is not 'detonator' or status is not 'approved'
             localStorage.clear();
             router.push("/login");
@@ -54,11 +44,14 @@ const DetailKupon = () => {
         setLoading(true);
         if (id_order) {
             axios
-                .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}coupon/fetch/${id_order}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
+                .get(
+                    `${process.env.NEXT_PUBLIC_API_BASE_URL}coupon/fetch/${id_order}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                )
                 .then((response) => {
                     setDataApi(response.data.body);
                     setImgMakan(response.data.body.report.image_food);
@@ -75,26 +68,30 @@ const DetailKupon = () => {
     }, [id_order]);
 
     const censorKTPNumber = (ktpNumber) => {
-        if (!ktpNumber) return '';
-        return `${ktpNumber.slice(0, 2)}${'*'.repeat(ktpNumber.length - 4)}${ktpNumber.slice(-2)}`;
+        if (!ktpNumber) return "";
+        return `${ktpNumber.slice(0, 2)}${"*".repeat(
+            ktpNumber.length - 4
+        )}${ktpNumber.slice(-2)}`;
     };
     const censorPhoneNumber = (ktpNumber) => {
-        if (!ktpNumber) return '';
-        return `${ktpNumber.slice(0, 3)}${'*'.repeat(ktpNumber.length - 4)}${ktpNumber.slice(-3)}`;
+        if (!ktpNumber) return "";
+        return `${ktpNumber.slice(0, 3)}${"*".repeat(
+            ktpNumber.length - 4
+        )}${ktpNumber.slice(-3)}`;
     };
 
     const openModal = (identifier, event) => {
         event.preventDefault(); // Menghentikan propagasi event
         event.stopPropagation(); // Menghentikan propagasi event
 
-        const index = parseInt(identifier.split('_')[1]);
+        const index = parseInt(identifier.split("_")[1]);
 
-        if (identifier.startsWith('makan')) {
-            setDataCarousel('makan');
+        if (identifier.startsWith("makan")) {
+            setDataCarousel("makan");
             setCurrentImageIndex(index);
             setIsModalOpen(true);
-        } else if (identifier.startsWith('penerima')) {
-            setDataCarousel('penerima');
+        } else if (identifier.startsWith("penerima")) {
+            setDataCarousel("penerima");
             setCurrentImageIndex(index);
             setIsModalOpen(true);
         }
@@ -107,7 +104,10 @@ const DetailKupon = () => {
     return (
         <>
             <div className="container mx-auto pt-14 bg-white overflow-hidden h-screen">
-                <Header title="Detail Pesanan" backto={prevPath ? prevPath : "/beneficiaries"} />
+                <Header
+                    title="Detail Pesanan"
+                    backto={`/mydonation`}
+                />
                 {/* <Header title="Detail Pesanan" backto={prevPath ? prevPath : ""} /> */}
                 <div className="place-content-center h-screen overflow-auto pb-14">
                     {loading ? (
@@ -130,15 +130,13 @@ const DetailKupon = () => {
                         <CardKupon
                             key={dataApi?.id}
                             total_tax={dataApi?.total_tax}
-                            userRole="beneficiaries"
+                            userRole={`donator`}
                             to={""}
                             idOrder={dataApi?.id}
                             img={`${process.env.NEXT_PUBLIC_URL_STORAGE}${dataApi?.merchant_product.images[0]}`}
                             title={dataApi?.merchant_product?.name}
                             desc={dataApi?.merchant_product.description}
-                            date={moment(dataApi?.expired_at).format(
-                                "DD MMM YYYY hh:mm"
-                            )}
+                            date={moment(dataApi?.expired_at).format("DD MMM YYYY hh:mm")}
                             total_amount={dataApi?.total_amount}
                             status={dataApi?.status}
                             name_beneficiary={dataApi?.beneficiary?.fullname}
@@ -214,7 +212,7 @@ const DetailKupon = () => {
                             <div className="justify-between grid grid-cols-2 gap-2 py-3 ">
                                 <p className="text-sm text-gray-400">PIC Merchant</p>
                                 <p className="text-right text-sm text-black">
-                                    {dataApi?.merchant?.fullname}
+                                    {dataApi.merchant?.fullname}
                                 </p>
                                 <p className="text-sm text-gray-400">Toko Merchant</p>
                                 <p className="text-right text-sm text-black">
@@ -257,7 +255,6 @@ const DetailKupon = () => {
                                 <p className="text-right text-sm text-black">
                                     {censorPhoneNumber(dataApi?.beneficiary?.phone)}
                                 </p>
-
                             </div>
                             <div className="justify-between grid grid-cols-2 gap-2 ">
                                 <p className="text-sm text-gray-400">Alamat Beneficiaries</p>
@@ -278,72 +275,83 @@ const DetailKupon = () => {
                             <div className="flex justify-between ">
                                 <p className="text-sm text-gray-400 m-2">Foto Makanan </p>
                                 <div className="flex justify-end min-w-[200px]">
-                                    {imgMakan?.length > 0 && imgMakan.map((item, index) => (
-                                        <img
-                                            key={index}
-                                            onClick={(event) => openModal(`makan_${index}`, event)}
-                                            src={`${process.env.NEXT_PUBLIC_URL_STORAGE}${item?.image_url}`}
-                                            alt={`Image ${index}`} // Menambahkan atribut alt untuk aksesibilitas
-                                            className="w-[48px] h-[48px] bg-gray-300 m-1 cursor-pointer" // Menambahkan cursor-pointer
-                                        />
-                                    ))}
+                                    {imgMakan?.length > 0 &&
+                                        imgMakan.map((item, index) => (
+                                            <img
+                                                key={index}
+                                                onClick={(event) => openModal(`makan_${index}`, event)}
+                                                src={`${process.env.NEXT_PUBLIC_URL_STORAGE}${item?.image_url}`}
+                                                alt={`Image ${index}`} // Menambahkan atribut alt untuk aksesibilitas
+                                                className="w-[48px] h-[48px] bg-gray-300 m-1 cursor-pointer" // Menambahkan cursor-pointer
+                                            />
+                                        ))}
                                 </div>
-
                             </div>
 
                             <hr class="h-px bg-gray-200 border-0" />
                             <div className="flex justify-between ">
                                 <p className="text-sm text-gray-400 m-2">Foto Penerima </p>
                                 <div className="flex justify-end min-w-[200px]">
-                                    {imgPenerima?.length > 0 && imgPenerima?.map((item, index) => {
-                                        return (
-
-                                            <img key={index} onClick={(event) => openModal(`penerima_${index}`, event)} src={`${process.env.NEXT_PUBLIC_URL_STORAGE}${item?.image_url}`} className="w-[48px] h-[48px] bg-gray-300 m-1" />
-                                        )
-                                    })}
-
+                                    {imgPenerima?.length > 0 &&
+                                        imgPenerima?.map((item, index) => {
+                                            return (
+                                                <img
+                                                    key={index}
+                                                    onClick={(event) =>
+                                                        openModal(`penerima_${index}`, event)
+                                                    }
+                                                    src={`${process.env.NEXT_PUBLIC_URL_STORAGE}${item?.image_url}`}
+                                                    className="w-[48px] h-[48px] bg-gray-300 m-1 cursor-pointer"
+                                                />
+                                            );
+                                        })}
                                 </div>
                             </div>
 
                             {/* <hr  /> */}
-                            <p className="text-center text-[10px] italic text-primary mt-[50px]">Transaksi Kupon dilakukan secara sadar dan kedua belah pihak harus bertanggung jawab atas transaksi tersebut jika terdapat kecurangan pada transaksi diatas. Laporan transaksi kupon diatas akan diberikan kepada pemilik Donasi</p>
-
+                            <p className="text-center text-[10px] italic text-primary mt-[50px]">
+                                Transaksi Kupon dilakukan secara sadar dan kedua belah pihak
+                                harus bertanggung jawab atas transaksi tersebut jika terdapat
+                                kecurangan pada transaksi diatas. Laporan transaksi kupon diatas
+                                akan diberikan kepada pemilik Donasi
+                            </p>
                         </div>
                     )}
-
                 </div>
                 {loading && <Loading />}
                 <Modal
                     isOpen={isModalOpen}
                     onRequestClose={closeModal}
                     contentLabel="Image Carousel"
-                    className='modal'
-                    overlayClassName='overlay'
+                    className="modal"
+                    overlayClassName="overlay"
                 >
-                    <button className='close-modal-button' onClick={closeModal}>Close</button>
-                    <Carousel selectedItem={currentImageIndex}>
-                        {dataCarousel === "makan" ? (
-                            (imgMakan && imgMakan.length > 0) ? (
-                                imgMakan.map((src, index) => (
-                                    <div key={index}>
-                                        <img
-                                            className='img-carousel'
-                                            src={`${process.env.NEXT_PUBLIC_URL_STORAGE}${src?.image_url}`}
-                                            alt={`Makan ${index + 1}`}
-                                        />
+                    <div className="flex">
+                        <button className="close-modal-button p-2" onClick={closeModal}>
+                            <IconX />
+                        </button>
+                        <Carousel selectedItem={currentImageIndex}>
+                            {dataCarousel === "makan" ? (
+                                imgMakan && imgMakan.length > 0 ? (
+                                    imgMakan.map((src, index) => (
+                                        <div key={index}>
+                                            <img
+                                                className="img-carousel"
+                                                src={`${process.env.NEXT_PUBLIC_URL_STORAGE}${src?.image_url}`}
+                                                alt={`Makan ${index + 1}`}
+                                            />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="placeholder-message">
+                                        No images available for "makan"
                                     </div>
-                                ))
-                            ) : (
-                                <div className="placeholder-message">
-                                    No images available for "makan"
-                                </div>
-                            )
-                        ) : (
-                            (imgPenerima && imgPenerima.length > 0) ? (
+                                )
+                            ) : imgPenerima && imgPenerima.length > 0 ? (
                                 imgPenerima.map((src, index) => (
                                     <div key={index}>
                                         <img
-                                            className='img-carousel'
+                                            className="img-carousel"
                                             src={`${process.env.NEXT_PUBLIC_URL_STORAGE}${src?.image_url}`}
                                             alt={`Penerima ${index + 1}`}
                                         />
@@ -353,10 +361,9 @@ const DetailKupon = () => {
                                 <div className="placeholder-message">
                                     No images available for "penerima"
                                 </div>
-                            )
-                        )}
-                    </Carousel>
-
+                            )}
+                        </Carousel>
+                    </div>
                 </Modal>
             </div>
         </>

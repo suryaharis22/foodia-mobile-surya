@@ -3,7 +3,7 @@
 import Swal from "sweetalert2";
 
 const SweetAlert = ({
-  title,
+  title = "",
   text,
   imageUrl = "/img/illustration/checklist.png",
   imageWidth,

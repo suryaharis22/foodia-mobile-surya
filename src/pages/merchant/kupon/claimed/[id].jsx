@@ -129,6 +129,7 @@ const claimed = () => {
           ) : (
             <CardKupon
               key={dataApi?.id}
+              userRole={`merchant`}
               total_tax={dataApi?.total_tax}
               to={""}
               idOrder={dataApi?.id}
@@ -201,9 +202,12 @@ const claimed = () => {
           ) : (
             <div className="p-2 rounded-md mt-2 px-4">
               {/* <h5 className="text-xs mb-1 font-bold">Rangkuman Pesanan</h5> */}
+
               <div className="flex justify-between py-3">
                 <p className="text-sm text-gray-400">Tanggal Transaksi Kupon</p>
-                <p className="text-right text-sm">20 Juni 2024 15:25:00 WIB</p>
+                <p className="text-right text-sm">
+                  {moment(dataApi?.transaction_date).format("DD MMMM YYYY HH:mm:ss [WIB]")}
+                </p>
               </div>
               <hr />
               <div className="justify-between grid grid-cols-2 gap-2 py-3 ">

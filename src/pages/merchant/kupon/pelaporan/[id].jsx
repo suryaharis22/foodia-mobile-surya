@@ -1,3 +1,5 @@
+// src/pages/merchant/kupon/pelaporan/[id].jsx
+
 import CardPesanan from "@/components/CardPesanan";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
@@ -121,8 +123,6 @@ const pelaporan = () => {
     const closeModal = () => {
         setIsModalOpen(false);
     };
-
-
 
     const URIImgMakanan = async (imageDataURIs) => {
         try {
@@ -278,254 +278,165 @@ const pelaporan = () => {
     };
     return (
         <>
-            <div className="container mx-auto pt-14 bg-white overflow-hidden max-h-screen" >
+            <div className="container mx-auto pt-14 bg-white overflow-hidden max-h-screen flex flex-col justify-center">
                 <Header title="Detail Pesanan" backto={prevPath ? prevPath : ""} />
-                <div className="">
-                    {loading ? (
-                        <div className="border border-blue-300 shadow rounded-md p-4 max-w-sm w-80 h-28 mx-auto">
-                            <div className="animate-pulse flex space-x-4">
-                                <div className="rounded-md bg-slate-200 h-16 w-16"></div>
-                                <div className="flex-1 space-y-6 py-1">
+
+                {loading ? (
+                    <div className="border border-blue-300 shadow rounded-md p-4 max-w-sm w-80 h-28 mx-auto">
+                        <div className="animate-pulse flex space-x-4">
+                            <div className="rounded-md bg-slate-200 h-16 w-16"></div>
+                            <div className="flex-1 space-y-6 py-1">
+                                <div className="h-2 bg-slate-200 rounded"></div>
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="h-2 bg-slate-200 rounded col-span-2"></div>
+                                        <div className="h-2 bg-slate-200 rounded col-span-1"></div>
+                                    </div>
                                     <div className="h-2 bg-slate-200 rounded"></div>
-                                    <div className="space-y-3">
-                                        <div className="grid grid-cols-3 gap-4">
-                                            <div className="h-2 bg-slate-200 rounded col-span-2"></div>
-                                            <div className="h-2 bg-slate-200 rounded col-span-1"></div>
-                                        </div>
-                                        <div className="h-2 bg-slate-200 rounded"></div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    ) : (
-                        <CardKupon
-                            key={dataApi?.id}
-                            to={""}
-                            idOrder={dataApi?.id}
-                            img={`${process.env.NEXT_PUBLIC_URL_STORAGE}${dataApi?.merchant_product.images[0]}`}
-                            title={dataApi?.merchant_product?.name}
-                            desc={dataApi?.merchant_product.description}
-                            date={moment(dataApi?.expired_at).format(
-                                "DD MMM YYYY hh:mm"
-                            )}
-                            total_amount={dataApi?.total_amount}
-                            status={dataApi?.status}
-                            name_beneficiary={dataApi?.beneficiary?.fullname}
-                        />
-                    )}
-
-                    {loading ? (
-                        <>
-                            <div className="p-2 rounded-md mt-2 px-4 animate-pulse">
-                                {/* <h5 className="text-xs mb-1 font-bold">Rangkuman Pesanan</h5> */}
-                                <div className="justify-between grid grid-cols-2 gap-2 ">
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-right text-sm bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-right text-sm text-primary bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-right text-sm text-primary bg-gray-300 h-4 rounded"></div>
+                    </div>
+                ) : (
+                    <CardKupon
+                        key={dataApi?.id}
+                        userRole="merchant"
+                        total_tax={dataApi.total_tax * dataApi.qty}
+                        to=""
+                        idOrder={dataApi?.id}
+                        img={`${process.env.NEXT_PUBLIC_URL_STORAGE}${dataApi?.merchant_product.images[0]}`}
+                        title={dataApi?.merchant_product?.name}
+                        desc={dataApi?.merchant_product.description}
+                        date={moment(dataApi?.expired_at).format("DD MMM YYYY hh:mm")}
+                        total_amount={dataApi?.total_amount}
+                        status={dataApi?.status}
+                        name_beneficiary={dataApi?.beneficiary?.fullname}
+                    />
+                )}
+                <div className="px-[16px] flex flex-col h-screen justify-between">
+                    {dataApi?.status === "active" ? (
+                        <div>
+                            <Link
+                                href="/merchant/kupon/upload-bukti?makanan"
+                                className="bg-gray-200 text-white rounded-md p-[16px] w-full border-2 border-primary flex justify-between mb-2"
+                            >
+                                <div className="w-[52px] h-[52px] bg-primary rounded-md flex justify-center items-center">
+                                    <IconCamera size={20} />
                                 </div>
-
-                                <hr className="h-px bg-gray-200 border-0 mt-2" />
-                                <div className="justify-between grid grid-cols-2 gap-2 py-4">
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-right text-sm bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-right text-sm bg-gray-300 h-4 rounded"></div>
-                                </div>
-
-                                <hr className="h-px bg-gray-200 border-0" />
-                                <div className="justify-between grid grid-cols-2 gap-2 py-4">
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-right text-sm bg-gray-300 h-4 rounded"></div>
-                                </div>
-                                <hr className="h-px bg-gray-200 border-0" />
-                                <div className="justify-between grid grid-cols-2 gap-2 py-4">
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="flex gap-4">
-                                        <div className="text-right text-sm bg-gray-300 h-4 rounded"></div>
-                                        <a
-                                            href="#"
-                                            className="text-sm font-normal mb-12 text-red-500 bg-gray-300 h-4 rounded"
-                                        ></a>
+                                {imgMakan.length > 0 ? (
+                                    <div className="rounded-md flex justify-end my-auto min-w-[134px]">
+                                        {imgMakan.map((item, index) => (
+                                            <div key={index} className="relative">
+                                                <img
+                                                    onClick={(event) => openModal(`makan_${index}`, event)}
+                                                    className="w-[52px] h-[52px] object-cover rounded-md mx-1"
+                                                    src={item}
+                                                    alt={`Makanan ${index + 1}`}
+                                                />
+                                                <button
+                                                    className="absolute top-0 right-0 m-1 p-1 bg-white rounded-full cursor-pointer"
+                                                    onClick={(event) => RemoveImageMakanan(index, event)}
+                                                >
+                                                    <IconX size={10} color="red" />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
-                                </div>
-                                <hr className="h-px bg-gray-200 border-0" />
-                                <div className="justify-between grid grid-cols-2 gap-2 py-4">
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="text-right text-sm bg-gray-300 h-4 rounded"></div>
-                                </div>
-                                <hr className="h-px bg-gray-200 border-0" />
-                                <div className="py-4">
-                                    <div className="text-sm text-gray-400 bg-gray-300 h-4 rounded"></div>
-                                    <div className="font-normal mt-2 text-sm bg-gray-300 h-6 rounded"></div>
-                                </div>
-                            </div>
-                            <div className=" h-20 bottom-0 my-0 p-2rounded-md mt-2 mx-2 grid grid-cols-2 gap-4 place-content-center">
-                                <div
-                                    className={`bg-gray-200 text-white rounded-md h-10 w-full col-span-2`}
-                                >
-                                    --
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="px-[16px] flex flex-col h-screen justify-between">
-                            {dataApi?.status === "active" ? (
-                                <>
-                                    <div className="">
-                                        <Link href="/merchant/kupon/upload-bukti?makanan" className="bg-gray-200 text-white rounded-md p-[16px] w-full border-2 border-primary flex justify-between mb-2">
-                                            <div className="w-[52px] h-[52px] bg-primary rounded-md flex justify-center items-center"><IconCamera size={20} /></div>
-                                            {imgMakan.length > 0 ? (
-                                                <>
-                                                    {imgMakan.length < 1 && (
-                                                        <div className="flex flex-col items-center my-auto w-[100px]">
-                                                            <p className="text-red-500 text-[10px] font-bold">Minimal 2 foto</p>
-                                                        </div>
-                                                    )}
-                                                    <div className="rounded-md flex justify-end my-auto min-w-[134px]">
-
-                                                        <div className="relative rounded-md my-auto flex">
-                                                            {imgMakan.map((item, index) => (
-                                                                <div key={index} className="relative">
-                                                                    <img
-                                                                        onClick={(event) => openModal(`makan_${index}`, event)}
-                                                                        className="w-[52px] h-[52px] object-cover rounded-md mx-1"
-                                                                        src={item}
-                                                                        alt={`Makanan ${index + 1}`}
-                                                                    />
-                                                                    <button
-                                                                        className="absolute top-0 right-0 m-1 p-1 bg-white rounded-full cursor-pointer"
-                                                                        onClick={(event) => RemoveImageMakanan(index, event)}
-                                                                    >
-                                                                        <IconX size={10} color="red" />
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <div className="flex flex-col items- my-auto w-[234px]">
-                                                    <p className="text-black text-[12px] font-bold">Foto Makanan yang Disajikan</p>
-                                                    <p className="text-primary text-[10px] font-bold">Minimal 2 foto</p>
-                                                </div>
-                                            )}
-                                        </Link>
-
-                                        <Link href="/merchant/kupon/upload-bukti?penerima" className="bg-gray-200 text-white rounded-md p-[16px] w-full border-2 border-primary flex justify-between mb-2">
-                                            <div className="w-[52px] h-[52px] bg-primary rounded-md flex justify-center items-center"><IconCamera size={20} /></div>
-                                            {imgPenerima.length > 0 ? (
-                                                <>
-                                                    {imgPenerima.length < 2 && (
-                                                        <div className="flex flex-col items-center my-auto w-[100px]">
-                                                            <p className="text-red-500 text-[10px] font-bold">Minimal 2 foto</p>
-                                                        </div>
-                                                    )}
-                                                    <div className=" rounded-md flex justify-end my-auto min-w-[134px]">
-
-                                                        <div className="relative rounded-md my-auto flex">
-                                                            {imgPenerima.map((item, index) => (
-                                                                <div key={index} className="relative">
-                                                                    <img
-                                                                        onClick={(event) => openModal(`penerima_${index}`, event)}
-                                                                        className="w-[52px] h-[52px] object-cover rounded-md mx-1"
-                                                                        src={item}
-                                                                        alt={`Penerima ${index + 1}`}
-                                                                    />
-                                                                    <button
-                                                                        className="absolute top-0 right-0 m-1 p-1 bg-white rounded-full cursor-pointer"
-                                                                        onClick={(event) => RemoveImagePenerima(index, event)}
-                                                                    >
-                                                                        <IconX size={10} color="red" />
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-
-                                                </>
-                                            ) :
-                                                <div className="flex flex-col items- my-auto w-[234px]">
-                                                    <p className="text-black text-[12px] font-bold ">Foto Makanan dengan Penerima Manfaat </p>
-                                                    <p className="text-primary text-[10px] font-bold">Minimal 2 foto</p>
-                                                </div>
-                                            }
-                                        </Link>
+                                ) : (
+                                    <div className="flex flex-col items-start my-auto w-[234px]">
+                                        <p className="text-black text-[12px] font-bold">Foto Makanan yang Disajikan</p>
+                                        <p className="text-primary text-[10px] font-bold">Minimal 2 foto</p>
                                     </div>
-                                    <div className="w-full text-center my-2 mb-52">
-                                        <button
-                                            disabled={imgMakan.length < 1 || imgPenerima.length < 2}
-                                            onClick={handleAprovButtonClick}
-                                            className={`${imgMakan.length < 1 || imgPenerima.length < 2 ? "bg-gray-300" : "bg-primary"}  text-white font-medium rounded-lg h-10 px-2`}
-                                        >
-                                            Pesana  Telah Selesai
-                                        </button>
+                                )}
+                            </Link>
+
+                            <Link
+                                href="/merchant/kupon/upload-bukti?penerima"
+                                className="bg-gray-200 text-white rounded-md p-[16px] w-full border-2 border-primary flex justify-between mb-2"
+                            >
+                                <div className="w-[52px] h-[52px] bg-primary rounded-md flex justify-center items-center">
+                                    <IconCamera size={20} />
+                                </div>
+                                {imgPenerima.length > 0 ? (
+                                    <div className="rounded-md flex justify-end my-auto min-w-[134px]">
+                                        {imgPenerima.map((item, index) => (
+                                            <div key={index} className="relative">
+                                                <img
+                                                    onClick={(event) => openModal(`penerima_${index}`, event)}
+                                                    className="w-[52px] h-[52px] object-cover rounded-md mx-1"
+                                                    src={item}
+                                                    alt={`Penerima ${index + 1}`}
+                                                />
+                                                <button
+                                                    className="absolute top-0 right-0 m-1 p-1 bg-white rounded-full cursor-pointer"
+                                                    onClick={(event) => RemoveImagePenerima(index, event)}
+                                                >
+                                                    <IconX size={10} color="red" />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
+                                ) : (
+                                    <div className="flex flex-col items-start my-auto w-[234px]">
+                                        <p className="text-black text-[12px] font-bold">Foto Makanan dengan Penerima Manfaat</p>
+                                        <p className="text-primary text-[10px] font-bold">Minimal 2 foto</p>
+                                    </div>
+                                )}
+                            </Link>
 
 
-                                </>
-                            )
-                                // : dataApi?.order_status === "claimed" ? (
-                                //     <>
-                                //         <button
-                                //             onClick={handleAprovButtonClick}
-                                //             className="bg-primary border-2 border-primary text-white font-medium rounded-xl h-10"
-                                //         >
-                                //             Pesana  Telah Selesai
-                                //         </button>
-                                //     </>
-
-                                // ) 
-                                : null}
                         </div>
-                    )}
-
+                    ) : null}
 
                 </div>
-                {loading && <Loading />}
-                <Modal
-                    isOpen={isModalOpen}
-                    onRequestClose={closeModal}
-                    contentLabel="Image Carousel"
-                    className="fixed inset-0 flex items-center justify-center p-4 bg-white rounded-lg shadow-lg outline-none max-w-4xl mx-auto"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-50"
-                >
-                    {/* Close Button */}
+                <div className="w-full text-center my-6 absolute inset-x-0 bottom-0">
                     <button
-                        className="absolute z-10 top-12 right-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full focus:outline-none"
-                        onClick={closeModal}
+                        disabled={imgMakan.length < 1 || imgPenerima.length < 2}
+                        onClick={handleAprovButtonClick}
+                        className={`${imgMakan.length < 1 || imgPenerima.length < 2 ? "bg-gray-300" : "bg-primary"
+                            } text-white font-medium rounded-lg h-10 px-2`}
                     >
-                        Close
+                        Pesanan Telah Selesai
                     </button>
-
-                    {/* Carousel */}
-                    <Carousel selectedItem={currentImageIndex} className="w-full h-full">
-                        {dataCarousel === "makan"
-                            ? imgMakan.map((src, index) => (
-                                <div key={index} className="flex justify-center items-center">
-                                    <img
-                                        className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
-                                        src={src}
-                                        alt={`Captured ${index + 1}`}
-                                    />
-                                </div>
-                            ))
-                            : imgPenerima.map((src, index) => (
-                                <div key={index} className="flex justify-center items-center">
-                                    <img
-                                        className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
-                                        src={src}
-                                        alt={`Captured ${index + 1}`}
-                                    />
-                                </div>
-                            ))}
-                    </Carousel>
-                </Modal>
-
+                </div>
             </div>
 
+            {loading && <Loading />}
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                contentLabel="Image Carousel"
+                className="fixed inset-0 flex items-center justify-center p-4 bg-white rounded-lg shadow-lg outline-none max-w-4xl mx-auto"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+            >
+                <button
+                    className="absolute z-10 top-12 right-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full focus:outline-none"
+                    onClick={closeModal}
+                >
+                    Close
+                </button>
+                <Carousel selectedItem={currentImageIndex} className="w-full h-full">
+                    {dataCarousel === "makan"
+                        ? imgMakan.map((src, index) => (
+                            <div key={index} className="flex justify-center items-center">
+                                <img
+                                    className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                                    src={src}
+                                    alt={`Captured ${index + 1}`}
+                                />
+                            </div>
+                        ))
+                        : imgPenerima.map((src, index) => (
+                            <div key={index} className="flex justify-center items-center">
+                                <img
+                                    className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                                    src={src}
+                                    alt={`Captured ${index + 1}`}
+                                />
+                            </div>
+                        ))}
+                </Carousel>
+            </Modal>
         </>
     );
 };

@@ -53,7 +53,8 @@ const mydonation = () => {
     setLoading(true);
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
         }donation/list?start=${month}-01&end=${month}-${new Date(
           moment(month, "YYYY-MM").format("YYYY"),
           moment(month, "YYYY-MM").format("MM"),
@@ -97,7 +98,8 @@ const mydonation = () => {
     setLoading(true);
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
         }donation/coupon?start=${month}-01&end=${month}-${new Date(
           moment(month, "YYYY-MM").format("YYYY"),
           moment(month, "YYYY-MM").format("MM"),
@@ -167,10 +169,11 @@ const mydonation = () => {
                 setDonationType("donasi");
                 getHistoryDonations(month);
               }}
-              className={`${donationType === "donasi"
-                ? "border-b-primary text-primary"
-                : "border-b-transparent text-gray-400"
-                } pb-2 border-b-2 w-full`}
+              className={`${
+                donationType === "donasi"
+                  ? "border-b-primary text-primary"
+                  : "border-b-transparent text-gray-400"
+              } pb-2 border-b-2 w-full`}
             >
               Donasi
             </button>
@@ -179,10 +182,11 @@ const mydonation = () => {
                 setDonationType("kupon");
                 getHistoryCoupons(month);
               }}
-              className={` ${donationType === "kupon"
-                ? "border-b-primary text-primary"
-                : "border-b-transparent text-gray-400"
-                } pb-2 border-b-2 w-full`}
+              className={` ${
+                donationType === "kupon"
+                  ? "border-b-primary text-primary"
+                  : "border-b-transparent text-gray-400"
+              } pb-2 border-b-2 w-full`}
             >
               Kupon
             </button>
@@ -239,59 +243,61 @@ const mydonation = () => {
                       onClick={() =>
                         setIsOpenedMonthOptions(!isOpenedMonthOptions)
                       }
-                      className="flex flex-row text-[12px] font-semibold text-white custom-select w-20 h-[25px] rounded-md bg-transparent border-[1px] border-white outline-none justify-between items-center px-[3.5px]"
+                      className="flex flex-row text-[12px] font-semibold text-white custom-select w-fit h-[25px] rounded-md bg-transparent border-[1px] border-white outline-none justify-between items-center px-[3.5px]"
                     >
                       <p>{moment(month, "YYYY-MM").format("MMM YYYY")}</p>
                       <IconChevronDown size={"17px"} />
                     </button>
                     {isOpenedMonthOptions && (
-                      <div className="absolute overflow-auto flex flex-col top-[267px] items-start w-20 px-[3.5px] rounded-md bg-transparent border-[1px] bg-white outline-none">
+                      <div className="absolute overflow-auto flex flex-col top-[267px] items-start w-fit px-[3.5px] rounded-md bg-transparent border-[1px] bg-white outline-none">
                         {!monthOptions.includes(
                           moment(new Date()).format("YYYY-MM")
                         ) && (
-                            <button
-                              onClick={() => {
-                                onChangeMonth(
-                                  moment(new Date()).format("YYYY-MM")
-                                );
-                              }}
-                              className={`${moment(new Date(), "YYYY-MM").format(
+                          <button
+                            onClick={() => {
+                              onChangeMonth(
+                                moment(new Date()).format("YYYY-MM")
+                              );
+                            }}
+                            className={`${
+                              moment(new Date(), "YYYY-MM").format(
                                 "MMM YYYY"
                               ) === moment(month, "YYYY-MM").format("MMM YYYY")
                                 ? "text-primary"
                                 : "text-black"
-                                } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
-                            >
-                              {moment(new Date(), "YYYY-MM").format("MMM YYYY")}
-                              {moment(new Date(), "YYYY-MM").format(
-                                "MMM YYYY"
-                              ) ===
-                                moment(month, "YYYY-MM").format("MMM YYYY") ? (
-                                <IconCircleFilled
-                                  className="mb-0.5 mr-0.5"
-                                  color="green"
-                                  size={"10px"}
-                                />
-                              ) : (
-                                ""
-                              )}
-                            </button>
-                          )}
+                            } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
+                          >
+                            {moment(new Date(), "YYYY-MM").format("MMM YYYY")}
+                            {moment(new Date(), "YYYY-MM").format(
+                              "MMM YYYY"
+                            ) ===
+                            moment(month, "YYYY-MM").format("MMM YYYY") ? (
+                              <IconCircleFilled
+                                className="mb-0.5 mr-0.5"
+                                color="green"
+                                size={"10px"}
+                              />
+                            ) : (
+                              ""
+                            )}
+                          </button>
+                        )}
                         {monthOptions.map((bulan, index) => (
                           <button
                             key={index}
                             onClick={() => {
                               onChangeMonth(bulan);
                             }}
-                            className={`${moment(bulan, "YYYY-MM").format("MMM YYYY") ===
+                            className={`${
+                              moment(bulan, "YYYY-MM").format("MMM YYYY") ===
                               moment(month, "YYYY-MM").format("MMM YYYY")
-                              ? "text-primary"
-                              : "text-black"
-                              } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
+                                ? "text-primary"
+                                : "text-black"
+                            } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
                           >
                             {moment(bulan, "YYYY-MM").format("MMM YYYY")}
                             {moment(bulan, "YYYY-MM").format("MMM YYYY") ===
-                              moment(month, "YYYY-MM").format("MMM YYYY") ? (
+                            moment(month, "YYYY-MM").format("MMM YYYY") ? (
                               <IconCircleFilled
                                 className="mb-0.5 mr-0.5"
                                 color="green"
@@ -339,10 +345,11 @@ const mydonation = () => {
                           </p>
                         </div>
                         <p
-                          className={`text-[16px] font-bold ${data.type_donation === "booster"
-                            ? "text-[#1D5882]"
-                            : "text-primary"
-                            }`}
+                          className={`text-[16px] font-bold ${
+                            data.type_donation === "booster"
+                              ? "text-[#1D5882]"
+                              : "text-primary"
+                          }`}
                         >
                           {new Intl.NumberFormat("id-ID", {
                             style: "currency",
@@ -424,59 +431,61 @@ const mydonation = () => {
                       onClick={() =>
                         setIsOpenedMonthOptions(!isOpenedMonthOptions)
                       }
-                      className="flex flex-row text-[12px] font-semibold text-white custom-select w-20 h-[25px] rounded-md bg-transparent border-[1px] border-white outline-none justify-between items-center px-[3.5px]"
+                      className="flex flex-row text-[12px] font-semibold text-white custom-select w-fit h-[25px] rounded-md bg-transparent border-[1px] border-white outline-none justify-between items-center px-[3.5px]"
                     >
                       <p>{moment(month, "YYYY-MM").format("MMM YYYY")}</p>
                       <IconChevronDown size={"17px"} />
                     </button>
                     {isOpenedMonthOptions && (
-                      <div className="absolute overflow-auto flex flex-col top-[179px] items-start w-20 px-[3.5px] rounded-md bg-transparent border-[1px] bg-white outline-none">
+                      <div className="absolute overflow-auto flex flex-col top-[179px] items-start w-fit px-[3.5px] rounded-md bg-transparent border-[1px] bg-white outline-none">
                         {!couponMonthOptions?.includes(
                           moment(new Date()).format("YYYY-MM")
                         ) && (
-                            <button
-                              onClick={() => {
-                                onChangeMonth(
-                                  moment(new Date()).format("YYYY-MM")
-                                );
-                              }}
-                              className={`${moment(new Date(), "YYYY-MM").format(
+                          <button
+                            onClick={() => {
+                              onChangeMonth(
+                                moment(new Date()).format("YYYY-MM")
+                              );
+                            }}
+                            className={`${
+                              moment(new Date(), "YYYY-MM").format(
                                 "MMM YYYY"
                               ) === moment(month, "YYYY-MM").format("MMM YYYY")
                                 ? "text-primary"
                                 : "text-black"
-                                } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
-                            >
-                              {moment(new Date(), "YYYY-MM").format("MMM YYYY")}
-                              {moment(new Date(), "YYYY-MM").format(
-                                "MMM YYYY"
-                              ) ===
-                                moment(month, "YYYY-MM").format("MMM YYYY") ? (
-                                <IconCircleFilled
-                                  className="mb-0.5 mr-0.5"
-                                  color="green"
-                                  size={"10px"}
-                                />
-                              ) : (
-                                ""
-                              )}
-                            </button>
-                          )}
+                            } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
+                          >
+                            {moment(new Date(), "YYYY-MM").format("MMM YYYY")}
+                            {moment(new Date(), "YYYY-MM").format(
+                              "MMM YYYY"
+                            ) ===
+                            moment(month, "YYYY-MM").format("MMM YYYY") ? (
+                              <IconCircleFilled
+                                className="mb-0.5 mr-0.5"
+                                color="green"
+                                size={"10px"}
+                              />
+                            ) : (
+                              ""
+                            )}
+                          </button>
+                        )}
                         {couponMonthOptions?.map((bulan, index) => (
                           <button
                             key={index}
                             onClick={() => {
                               onChangeMonth(bulan);
                             }}
-                            className={`${moment(bulan, "YYYY-MM").format("MMM YYYY") ===
+                            className={`${
+                              moment(bulan, "YYYY-MM").format("MMM YYYY") ===
                               moment(month, "YYYY-MM").format("MMM YYYY")
-                              ? "text-primary"
-                              : "text-black"
-                              } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
+                                ? "text-primary"
+                                : "text-black"
+                            } text-[12px] w-full text-left font-semibold flex flex-row items-center justify-between`}
                           >
                             {moment(bulan, "YYYY-MM").format("MMM YYYY")}
                             {moment(bulan, "YYYY-MM").format("MMM YYYY") ===
-                              moment(month, "YYYY-MM").format("MMM YYYY") ? (
+                            moment(month, "YYYY-MM").format("MMM YYYY") ? (
                               <IconCircleFilled
                                 className="mb-0.5 mr-0.5"
                                 color="green"
@@ -545,7 +554,7 @@ const mydonation = () => {
                           onClick={() => {
                             // localStorage.setItem("prevPath", "/mydonation");
                             router.push(
-                              `/merchant/kupon/claimed/${data.coupon_transaction_id}`
+                              `/kupon/${data.coupon_transaction_id}`
                             );
                           }}
                           class="text-xs font-semibold w-full focus:outline-none"

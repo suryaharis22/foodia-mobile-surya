@@ -16,13 +16,15 @@ const CardKupon = (props) => {
     name_beneficiary = "",
     qty = 0,
     idOrder = 0,
-    total_tax,
+    total_tax = 0,
+    userRole = "donator"
   } = props;
   let to = "#";
 
 
   useEffect(() => {
     setRole(localStorage.getItem("role"));
+
   }, []);
 
   if (router.pathname === "/merchant/kupon") {
@@ -52,19 +54,19 @@ const CardKupon = (props) => {
             <div class="text-justify text-[14px]">
               <ul class="list-decimal font-bold space-y-2">
                 <li class="mb-4">
-                  <p class="italic font-normal text-primary">
+                  <p class="font-semibold font-normal text-primary">
                     Anda akan menerima pembayaran setelah selesai melaporkan kegiatan pemberian makan 
                     <span class="not-italic text-black"> kepada penerima manfaat menggunakan fitur kupon. Foto yang harus dilaporkan:</span>
                   </p>
                   <ul class="list-alpha ml-6 font-bold space-y-1">
                     <li>
-                      <p class="italic font-normal text-primary">
+                      <p class="font-semibold font-normal text-primary">
                         Melaporkan foto makanan yang disajikan 
                         <span class="not-italic text-black"> sesuai pesanan pada kupon makan</span>
                       </p>
                     </li>
                     <li>
-                      <p class="italic font-normal text-primary">
+                      <p class="font-semibold font-normal text-primary">
                         Melaporkan foto wajah Penerima Manfaat 
                         <span class="not-italic text-black"> yang mengklaim Kupon Makan</span>
                       </p>
@@ -120,7 +122,7 @@ const CardKupon = (props) => {
           <img
             className="w-[100px] h-[100px] rounded-md object-cover"
             src={img}
-            alt="Nasi Kuning"
+            alt="No Image"
           />
           <div className="ml-2 flex flex-col justify-between w-full">
             <div className="flex justify-between items-center">
@@ -137,14 +139,16 @@ const CardKupon = (props) => {
             </p>
             <div className="flex justify-between items-start">
               <div className="w-[60%]">
+
                 <p className="text-[#6CB28E] text-[18px] font-bold text-start">
                   {new Intl.NumberFormat("id-ID", {
                     style: "currency",
                     currency: "IDR",
                     minimumFractionDigits: 0,
-                  }).format(total_amount - 1000)}
+                  }).format(userRole === "merchant" ? total_amount - total_tax : total_amount)}
                 </p>
-                {role === "merchant" && (
+
+                {userRole === "donator" && (
                   <div className="text-[9px] w-full text-[#1D5882] flexfont-bold text-start">
                     <p className="mt-[1px]">
                       {`( Termasuk ${new Intl.NumberFormat("id-ID", {
@@ -157,12 +161,18 @@ const CardKupon = (props) => {
                 )}
               </div>
               <div className="text-[8px] text-right flex flex-col items-end">
-                <p className="italic text-gray-600">Permintaan oleh</p>
-                <p className="font-semibold italic text-gray-600">
-                  {name_beneficiary}
-                </p>
-                <p className="italic text-gray-600">Masa berlaku hingga</p>
-                <p className="font-semibold italic text-gray-600">{date}</p>
+                <div className="flex flex-col">
+                  <p className="italic text-gray-600">Permintaan oleh</p>
+                  <p className="font-semibold italic text-gray-600">
+                    {name_beneficiary}
+                  </p>
+                </div>
+                <div className={`flex flex-col ${userRole === "merchant" ? "text-red-600" : "text-gray-600"}`}>
+                  <p className="italic ">Masa berlaku hingga</p>
+                  <p className="font-semibold italic ">{date}</p>
+                </div>
+
+
               </div>
             </div>
           </div>

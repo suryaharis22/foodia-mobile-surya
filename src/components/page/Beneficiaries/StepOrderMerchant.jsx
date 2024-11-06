@@ -317,17 +317,17 @@ function StepTwo({ DataOrder, setDataOrder, loading, setLoading }) {
                 width: 300,
                 heightAuto: false,
                 padding: '20px',
-                showConfirmButton: true,
-                confirmButtonText: '<span class="text-white font-semibold">Sudah</span>', // Menggunakan Tailwind CSS classes untuk styling
+
                 showCancelButton: true,
-                cancelButtonText: '<span class="text-white font-semibold">Belum</span>', // Menggunakan Tailwind CSS classes untuk styling
-                confirmButtonColor: '#a4d188', // Warna latar belakang tombol konfirmasi
-                cancelButtonColor: '#f0625d', // Warna latar belakang tombol batal
+                cancelButtonText: '<span class="text-white font-semibold">Belum</span>',
+                cancelButtonColor: '#f0625d',
+                showConfirmButton: true,
+                confirmButtonText: '<span class="text-white font-semibold">Sudah</span>',
+                confirmButtonColor: '#a4d188',
+                reverseButtons: true, // This line reverses the buttons
                 customClass: {
                     title: 'text-primary text-lg',
                     content: 'text-gray-700',
-                    // confirmButton: 'bg-primary hover:bg-green-600 border-green-500', // Tailwind CSS classes untuk tombol konfirmasi
-                    // cancelButton: 'bg-red-500 hover:bg-red-600 border-red-500', // Tailwind CSS classes untuk tombol batal
                 },
                 showClass: {
                     popup: 'animate__animated animate__fadeInUp animate__faster',

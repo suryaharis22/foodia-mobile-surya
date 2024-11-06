@@ -115,7 +115,7 @@ const CardInbox = ({ DataInbox }) => {
           break;
         case "Permintaan Klaim Kupon":
           setUrl(
-            `/merchant/scan-kupon/${DataInbox?.coupon_transaction_id}`
+            `/merchant/kupon`
           );
           break;
         case "Laporan Transaksi Klaim Kupon":

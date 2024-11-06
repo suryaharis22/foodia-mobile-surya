@@ -58,13 +58,42 @@ const Beneficiaries = () => {
       );
 
       const cekData = response.data.body;
-      handleCheckData(cekData);
+      const noteRejected = {
+        FullName: '',
+        NameMerchant: '',
+        LinkAjaNumber: '',
+        PhoneNumber: '',
+        KTPNumber: '',
+        KTPPhoto: '',
+        SelfPhoto: '',
+        MerchantPhoto: '',
+        Address: '',
+      };
+
+      let responseObject = {};
+
+      // Memeriksa apakah cekData.note tersedia dan memprosesnya jika ada
+      if (cekData.beneficiaries?.status === "rejected") {
+        responseObject = cekData.beneficiaries?.note.split('|').reduce((acc, pair) => {
+          const [key, value] = pair.split(':');
+          if (key && noteRejected.hasOwnProperty(key.trim())) {
+            acc[key.trim()] = value ? value.trim() : ''; // Gunakan nilai kosong jika `value` tidak ada
+          }
+          return acc;
+        }, {});
+      }
+
+      const errorObject = { ...noteRejected, ...responseObject };
+
+
+      handleCheckData(cekData, errorObject);
     } catch (error) {
       Error401(error, router);
     }
   };
 
-  const handleCheckData = (cekData) => {
+
+  const handleCheckData = (cekData, errorObject) => {
     if (cekData.merchant?.status === "waiting") {
       alertCekRegis("Merchant");
     } else if (cekData.detonator?.status === "waiting") {
@@ -73,7 +102,7 @@ const Beneficiaries = () => {
       if (cekData.merchant?.status === "approved") {
         handleMerchantApproved(cekData.merchant);
       } else {
-        handleBeneficiariesStatus(cekData.beneficiaries);
+        handleBeneficiariesStatus(cekData.beneficiaries, errorObject);
       }
     }
   };
@@ -92,7 +121,7 @@ const Beneficiaries = () => {
     });
   };
 
-  const handleBeneficiariesStatus = (beneficiaries) => {
+  const handleBeneficiariesStatus = (beneficiaries, errorObject) => {
     if (!beneficiaries) {
       promptRegistration();
     } else {
@@ -101,7 +130,7 @@ const Beneficiaries = () => {
           handleWaitingStatus(beneficiaries);
           break;
         case "rejected":
-          handleRejectedStatus(beneficiaries);
+          handleRejectedStatus(beneficiaries, errorObject);
           break;
         case "approved":
           handleApprovedStatus(beneficiaries);
@@ -143,21 +172,54 @@ const Beneficiaries = () => {
     });
   };
 
-  const handleRejectedStatus = (beneficiaries) => {
+  const handleRejectedStatus = (beneficiaries, errorObject) => {
     setLoading(false);
     setBeneficiaryData(beneficiaries);
+
+    // Menggunakan Swal.fire untuk menampilkan pesan peringatan
     Swal.fire({
       icon: "warning",
       title: "Beneficiaries Ditolak",
-      text: beneficiaries.note,
+      html: `
+        <ul class="max-w-md space-y-2 text-gray-500 list-inside dark:text-gray-400">
+          ${Object.entries(errorObject) // Mengambil setiap entri dari errorObject
+          .filter(([_, value]) => value) // Hanya menampilkan item yang memiliki nilai
+          .map(
+            ([key, value]) => `
+                <li class="flex items-start">
+                  <span class="font-medium text-gray-700 whitespace-nowrap">${formatKey(key)}:</span> 
+                  <span class="text-red-600 truncate">${value}</span>
+                </li>`
+          )
+          .join("")}
+        </ul>
+      `,
       showConfirmButton: false,
-      timer: 2000,
+      timer: 4000, // Mengatur timer untuk menutup pesan setelah 4 detik
     });
 
+    // Setelah 4 detik, mengarahkan pengguna ke halaman edit beneficiaries
     setTimeout(() => {
       router.push("/beneficiaries/edit-beneficiaries?step=1");
-    }, 2000);
+    }, 4000);
   };
+
+  // Fungsi untuk memformat nama kunci agar lebih mudah dibaca
+  const formatKey = (key) => {
+    const keyMap = {
+      FullName: "Nama Lengkap",
+      NameMerchant: "Nama Merchant",
+      LinkAjaNumber: "Nomor LinkAja",
+      PhoneNumber: "Nomor Telepon",
+      KTPNumber: "Nomor KTP",
+      KTPPhoto: "Foto KTP",
+      SelfPhoto: "Foto Diri",
+      MerchantPhoto: "Foto Merchant",
+      Address: "Alamat",
+    };
+    return keyMap[key] || key; // Mengembalikan nilai dari keyMap atau key itu sendiri jika tidak ada di keyMap
+  };
+
 
   const handleApprovedStatus = (beneficiaries) => {
     setBeneficiaryData(beneficiaries);
@@ -452,18 +514,27 @@ const Beneficiaries = () => {
                         {data.merchant_product?.description}
                       </p>
                       <div className="text-[8px] text-right flex flex-col items-end">
-                        <p className="italic text-gray-600">Permintaan oleh</p>
-                        <p className="font-semibold italic text-gray-600">
-                          {localStorage.getItem("fullname")}
-                        </p>
-                        <p className="italic text-gray-600">
-                          Masa berlaku hingga
-                        </p>
-                        <p className="font-semibold italic text-gray-600">
-                          {moment(data.expired_at).format(
-                            "DD MMMM YYYY HH:mm:ss [WIB]"
-                          )}
-                        </p>
+                        <div className="flex flex-col">
+                          <p className="italic text-gray-600">Permintaan oleh {data.status}</p>
+                          <p className="font-semibold italic text-gray-600">
+                            {localStorage.getItem("fullname")}
+                          </p>
+                        </div>
+                        {(data.status === "reserved" || data.status === "expired") && (
+                          <div className="flex flex-col text-red-600">
+                            <p className="italic ">
+                              Masa berlaku hingga
+                            </p>
+                            <p className="font-semibold italic ">
+                              {moment(data.expired_at).format(
+                                "DD MMMM YYYY HH:mm:ss [WIB]"
+                              )}
+                            </p>
+                          </div>
+                        )}
+
+
+
                       </div>
                     </div>
                   </div>

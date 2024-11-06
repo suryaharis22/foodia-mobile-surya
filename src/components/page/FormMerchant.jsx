@@ -27,7 +27,6 @@ const FormMenu = () => {
 
   const updateCart = (updatedCart) => {
     setCart(updatedCart);
-    // Menyimpan data keranjang ke localStorage setelah diperbarui
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
