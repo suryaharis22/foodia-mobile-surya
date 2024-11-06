@@ -22,11 +22,11 @@ const CameraScan = () => {
                 const videoDevices = devices.filter(device => device.kind === 'videoinput');
                 setCameraDevices(videoDevices);
 
-                // Cari kamera belakang, jika tidak ada gunakan kamera depan atau kamera pertama
+                // Prioritaskan kamera belakang jika ada
                 const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('rear'));
                 const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front')) || videoDevices[0];
 
-                // Pilih kamera belakang jika tersedia, atau gunakan kamera depan
+                // Set kamera default berdasarkan ketersediaan kamera belakang
                 setSelectedCamera(rearCamera ? rearCamera.deviceId : frontCamera.deviceId);
                 setLoading(false);
             } catch (error) {
@@ -36,7 +36,7 @@ const CameraScan = () => {
                     title: 'Error',
                     text: 'Could not access camera devices. Please enable camera permissions.',
                 }).then(() => {
-                    router.back();
+                    router.back(); // Navigasi balik jika izin ditolak
                 });
                 setLoading(false);
             }
@@ -48,6 +48,7 @@ const CameraScan = () => {
     const handleCameraChange = (event) => {
         const newCamera = event.target.value;
         setSelectedCamera(newCamera);
+        console.log("Selected camera ID:", newCamera);
     };
 
     useEffect(() => {
@@ -58,7 +59,7 @@ const CameraScan = () => {
                     processQRCode(imageSrc);
                 }
             }
-        }, 1000);
+        }, 1000); // Periksa setiap detik
 
         return () => clearInterval(interval);
     }, [processedCodes, selectedCamera]);
@@ -85,6 +86,7 @@ const CameraScan = () => {
     };
 
     const PostCode = (code) => {
+
         axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}coupon/scan`, { qr_code: code }, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -110,11 +112,11 @@ const CameraScan = () => {
                     title: 'Error',
                     text: 'Failed QR Code expired',
                     timer: 2000,
-                });
+                })
             });
     };
 
-    const hendleClose = () => {
+    const handleClose = () => {
         router.back();
     }
 
@@ -122,11 +124,11 @@ const CameraScan = () => {
         <div className="flex flex-col items-center w-full h-screen bg-white">
             <div className="flex items-center justify-between w-full px-4 py-2">
                 <h1 className="text-xl font-bold">QR Code Scanner</h1>
-                <button onClick={hendleClose} className="flex items-center justify-center p-2 font-bold text-black bg-red-600 rounded-md cursor-pointer">
+                <button onClick={handleClose} className="flex items-center justify-center p-2 font-bold text-black bg-red-600 rounded-md cursor-pointer">
                     <IconSquareRoundedX size={15} />
                 </button>
             </div>
-            <div className="flex flex-col items-center justify-center w-full p-4 mt-4 bg-white rounded-md">
+            <div className="flex flex-col items-center justify-center w-full p-4 mt-4 bg-gray-300 rounded-md">
                 {loading ? (
                     <Loading />
                 ) : (
@@ -137,10 +139,13 @@ const CameraScan = () => {
                             width={320}
                             height={320}
                             screenshotFormat="image/jpeg"
-                            videoConstraints={{ deviceId: selectedCamera ? { exact: selectedCamera } : undefined }}
+                            videoConstraints={{
+                                deviceId: selectedCamera ? { exact: selectedCamera } : undefined,
+                                facingMode: 'environment', // Prioritaskan kamera belakang jika ada
+                            }}
                             className="rounded-md"
                         />
-                        <select onChange={handleCameraChange} value={selectedCamera} className="w-full p-2 mt-2 bg-gray-200 text-black rounded-md">
+                        <select onChange={handleCameraChange} value={selectedCamera} className="w-full p-2 mt-2 bg-white text-black rounded-md">
                             {cameraDevices.map((device, index) => (
                                 <option key={index} value={device.deviceId}>
                                     {device.label || `Camera ${index + 1}`}
