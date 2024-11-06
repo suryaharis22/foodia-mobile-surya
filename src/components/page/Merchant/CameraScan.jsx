@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import jsQR from 'jsqr';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { IconSquareRoundedX, IconCameraRotate } from '@tabler/icons-react';
+import { IconSquareRoundedX } from '@tabler/icons-react';
 import Swal from 'sweetalert2';
 import Loading from '@/components/Loading';
 
@@ -22,9 +22,11 @@ const CameraScan = () => {
                 const videoDevices = devices.filter(device => device.kind === 'videoinput');
                 setCameraDevices(videoDevices);
 
-                // Prefer rear camera; fallback to front if unavailable
+                // Cari kamera belakang, jika tidak ada gunakan kamera depan atau kamera pertama
                 const rearCamera = videoDevices.find(device => device.label.toLowerCase().includes('rear'));
                 const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front')) || videoDevices[0];
+
+                // Pilih kamera belakang jika tersedia, atau gunakan kamera depan
                 setSelectedCamera(rearCamera ? rearCamera.deviceId : frontCamera.deviceId);
                 setLoading(false);
             } catch (error) {
@@ -34,7 +36,7 @@ const CameraScan = () => {
                     title: 'Error',
                     text: 'Could not access camera devices. Please enable camera permissions.',
                 }).then(() => {
-                    router.back(); // Navigate back if permission is denied
+                    router.back();
                 });
                 setLoading(false);
             }
@@ -46,7 +48,6 @@ const CameraScan = () => {
     const handleCameraChange = (event) => {
         const newCamera = event.target.value;
         setSelectedCamera(newCamera);
-        console.log("Selected camera ID:", newCamera);
     };
 
     useEffect(() => {
@@ -57,7 +58,7 @@ const CameraScan = () => {
                     processQRCode(imageSrc);
                 }
             }
-        }, 1000); // Check every second
+        }, 1000);
 
         return () => clearInterval(interval);
     }, [processedCodes, selectedCamera]);
@@ -74,11 +75,8 @@ const CameraScan = () => {
             const imageData = context.getImageData(0, 0, img.width, img.height);
             const code = jsQR(imageData.data, img.width, img.height);
 
-
-
             if (code) {
                 const qrCode = code.data;
-                console.log("Scanned code:", code.data);
                 PostCode(qrCode);
             }
         };
@@ -87,8 +85,6 @@ const CameraScan = () => {
     };
 
     const PostCode = (code) => {
-        console.log("Scanned code:", code);
-
         axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}coupon/scan`, { qr_code: code }, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -114,7 +110,7 @@ const CameraScan = () => {
                     title: 'Error',
                     text: 'Failed QR Code expired',
                     timer: 2000,
-                })
+                });
             });
     };
 
@@ -130,7 +126,7 @@ const CameraScan = () => {
                     <IconSquareRoundedX size={15} />
                 </button>
             </div>
-            <div className="flex flex-col items-center justify-center w-full p-4 mt-4 bg-gray-300 rounded-md">
+            <div className="flex flex-col items-center justify-center w-full p-4 mt-4 bg-white rounded-md">
                 {loading ? (
                     <Loading />
                 ) : (
@@ -144,7 +140,7 @@ const CameraScan = () => {
                             videoConstraints={{ deviceId: selectedCamera ? { exact: selectedCamera } : undefined }}
                             className="rounded-md"
                         />
-                        <select onChange={handleCameraChange} value={selectedCamera} className="w-full p-2 mt-2 bg-white text-black rounded-md">
+                        <select onChange={handleCameraChange} value={selectedCamera} className="w-full p-2 mt-2 bg-gray-200 text-black rounded-md">
                             {cameraDevices.map((device, index) => (
                                 <option key={index} value={device.deviceId}>
                                     {device.label || `Camera ${index + 1}`}
@@ -155,7 +151,6 @@ const CameraScan = () => {
                 )}
             </div>
         </div>
-
     );
 };
 
